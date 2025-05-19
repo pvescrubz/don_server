@@ -1,0 +1,285 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name  String?
+  email String? @unique
+
+  steamId       String  @unique
+  steamTradeUrl String? @unique
+
+  activationToken String?
+  isActivated     Boolean @default(false)
+
+  balance Float @default(0)
+
+  roles Role[] @default([USER])
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+model SkinCS {
+  id          String  @id @default(cuid())
+  name        String
+  price       Decimal @db.Decimal(12, 2)
+  imageUrl    String
+  image       String
+  description Json?
+
+  game   Game?   @relation(fields: [gameId], references: [id])
+  gameId String?
+
+  category   CategoryCS? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  quality   QualityCS? @relation(fields: [qualityId], references: [id])
+  qualityId String?
+
+  rarity   RarityCS? @relation(fields: [rarityId], references: [id])
+  rarityId String?
+
+  type   TypeCS? @relation(fields: [typeId], references: [id])
+  typeId String?
+
+  phase   PhaseCS? @relation(fields: [phaseId], references: [id])
+  phaseId String?
+
+  previewOf TypeCS? @relation(name: "ItemTypeToPreviewSkin")
+
+  statTrak   StatTrakCS? @relation(fields: [statTrakId], references: [id])
+  statTrakId String?
+
+  souvenir   SouvenirCS? @relation(fields: [souvenirId], references: [id])
+  souvenirId String?
+
+  @@index([categoryId])
+  @@index([rarityId])
+  @@index([typeId])
+  @@index([qualityId])
+  @@index([phaseId])
+  @@index([statTrakId])
+  @@index([souvenirId])
+  @@index([gameId])
+  @@map("skinCS")
+}
+
+model SouvenirCS {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  skinsCS SkinCS[]
+
+  @@index([name])
+  @@map("souvenirCS")
+}
+
+model StatTrakCS {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  skinsCS SkinCS[]
+
+  @@index([name])
+  @@map("statTrakCS")
+}
+
+model CategoryCS {
+  id     String @id @default(cuid())
+  name   String @unique
+  ruName String @unique
+
+  skinsCS  SkinCS[]
+  type TypeCS[]
+
+  @@index([name])
+  @@map("categoryCS")
+}
+
+model Game {
+  id   String @id @default(cuid())
+  name String 
+
+  skinsCS   SkinCS[]
+  skinsDOTA SkinDOTA[]
+  skinsRUST SkinRUST[]
+
+  @@index([name])
+  @@map("game")
+}
+
+model QualityCS {
+  id     String @id @default(cuid())
+  name   String @unique
+  ruName String @unique
+
+  skinsCS SkinCS[]
+
+  @@index([name])
+  @@map("qualityCS")
+}
+
+model RarityCS {
+  id     String @id @default(cuid())
+  name   String @unique
+  ruName String @unique
+
+  skinsCS SkinCS[]
+
+  @@index([name])
+  @@map("rarityCS")
+}
+
+model TypeCS {
+  id   String @id @default(cuid())
+  name String @unique
+
+  categoryId String
+  category   CategoryCS @relation(fields: [categoryId], references: [id])
+
+  skinsCS SkinCS[]
+
+  previewSkinId String? @unique
+  previewSkin   SkinCS? @relation(name: "ItemTypeToPreviewSkin", fields: [previewSkinId], references: [id])
+
+  @@index([name])
+  @@map("itemTypeCS")
+}
+
+model PhaseCS {
+  id   String @id @default(cuid())
+  name String @unique
+
+  skinsCS SkinCS[]
+
+  @@index([name])
+  @@map("phaseCS")
+}
+
+model SkinDOTA {
+  id          String  @id @default(cuid())
+  name        String
+  price       Decimal @db.Decimal(12, 2)
+  imageUrl    String
+  image       String
+  description Json?
+
+  game   Game?   @relation(fields: [gameId], references: [id])
+  gameId String?
+
+  hero   HeroDOTA? @relation(fields: [heroId], references: [id])
+  heroId String?
+
+  slot   SlotDOTA? @relation(fields: [slotId], references: [id])
+  slotId String?
+
+  type   TypeDOTA? @relation(fields: [typeId], references: [id])
+  typeId String?
+
+  rarity   RarityDOTA? @relation(fields: [rarityId], references: [id])
+  rarityId String?
+
+  quality   QualityDOTA? @relation(fields: [qualityId], references: [id])
+  qualityId String?
+
+  @@index([gameId])
+  @@index([heroId])
+  @@index([slotId])
+  @@index([typeId])
+  @@index([rarityId])
+  @@index([qualityId])
+  @@map("skinDOTA")
+}
+
+model HeroDOTA {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  skinsDOTA SkinDOTA[]
+
+  @@index([name])
+  @@map("heroDOTA")
+}
+
+model SlotDOTA {
+  id     String @id @default(cuid())
+  name   String @unique
+  ruName String @unique
+
+  skinsDOTA SkinDOTA[]
+
+  @@index([name])
+  @@map("slotDOTA")
+}
+
+model TypeDOTA {
+  id     String @id @default(cuid())
+  name   String @unique
+  ruName String @unique
+
+  skinsDOTA SkinDOTA[]
+
+  @@index([name])
+  @@map("typeDOTA")
+}
+
+model RarityDOTA {
+  id   String @id @default(cuid())
+  name String @unique
+
+  skinsDOTA SkinDOTA[]
+
+  @@index([name])
+  @@map("rarityDOTA")
+}
+
+model QualityDOTA {
+  id   String @id @default(cuid())
+  name String @unique
+
+  skinsDOTA SkinDOTA[]
+
+  @@index([name])
+  @@map("qualityDOTA")
+}
+
+model SkinRUST {
+  id          String  @id @default(cuid())
+  name        String
+  price       Decimal @db.Decimal(12, 2)
+  imageUrl    String
+  image       String
+  description Json?
+
+  game   Game?   @relation(fields: [gameId], references: [id])
+  gameId String?
+
+  type   TypeRUST? @relation(fields: [typeId], references: [id])
+  typeId String?
+
+  @@index([typeId])
+  @@map("skinRUST")
+}
+
+model TypeRUST {
+  id     String @id @default(cuid())
+  name   String @unique
+  ruName String @unique
+
+  skinsRUST SkinRUST[]
+
+  @@index([name])
+  @@map("typeRUST")
+}

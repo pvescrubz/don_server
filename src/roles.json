@@ -1,0 +1,12 @@
+[
+    {
+        "name": "USER",
+        "permissions": [
+            "auth:logout",
+            "auth:check-access",
+            "auth:check-refresh",
+            "user:activate",
+            "user:send-activate-email"
+        ]
+    }
+]

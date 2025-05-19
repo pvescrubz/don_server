@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+
+        "target": "ES2019",
+        "module": "CommonJS",
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true
+    },
+    "include": ["src/**/*", "src/procedures/auth/.procedure.ts"]
+}
