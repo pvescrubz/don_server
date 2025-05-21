@@ -22,6 +22,8 @@ export type TFiltersCs = {
     quality: TFilter
     rarity: TFilter
     phase: TFilter
-    other: TFilter
+    statTrak: TFilter
+    souvenir: TFilter
+    // other: TFilter
     sort: ISortItem[]
 }

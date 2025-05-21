@@ -19,19 +19,13 @@ class SkinsProcedure extends Procedure {
             quality: { type: "string" },
             rarity: { type: "string" },
             type: { type: "string" },
+            search: { type: "string" },
 
             // cs2
             category: { type: "string" },
-            search: { type: "string" },
             phase: { type: "string" },
-            statTrak: {
-                type: "string",
-                enum: ["statTrak", "noStatTrak"],
-            },
-            souvenir: {
-                type: "string",
-                enum: ["souvenir", "noSouvenir"],
-            },
+            statTrak: { type: "string" },
+            souvenir: { type: "string" },
 
             // dota2
             hero: { type: "string" },

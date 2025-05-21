@@ -3,7 +3,24 @@ import { CUSTOM_FILTRES, SORT_OPTIONS } from "./filters.constans"
 import { TFiltersCs } from "./filters.type"
 
 export class FiltersService {
+    // Статический счётчик запросов
+    private static requestCount: number = 0
+
+    // Получить текущее значение
+    public static getRequestCount(): number {
+        return this.requestCount
+    }
+
+    // Сбросить счётчик (если нужно)
+    public static resetRequestCount(): void {
+        this.requestCount = 0
+    }
+
     async getCSFilters(): Promise<TFiltersCs> {
+        // Увеличиваем счётчик при каждом вызове
+        FiltersService.requestCount++
+
+        console.log(`Количество запросов: ${FiltersService.requestCount}`)
         const category = await prisma.categoryCS.findMany({
             select: {
                 id: true,
@@ -52,21 +69,23 @@ export class FiltersService {
             },
             phase: {
                 id: "phase",
-                name: "name",
+                name: "phase",
                 ruName: "Фаза",
                 data: phase,
             },
-            other: {
-                id: "other",
-                name: "other",
-                ruName: "Другое",
-                data: [
-                    statTrak[0],
-                    CUSTOM_FILTRES.noStatTrak,
-                    souvenir[0],
-                    CUSTOM_FILTRES.noSouvenir,
-                ],
+            statTrak: {
+                id: "statTrak",
+                name: "statTrak",
+                ruName: "StatTrak™",
+                data: [statTrak[0], CUSTOM_FILTRES.noStatTrak],
             },
+            souvenir: {
+                id: "souvenir",
+                name: "souvenir",
+                ruName: "Cувенирное",
+                data: [souvenir[0], CUSTOM_FILTRES.noSouvenir],
+            },
+
             sort: Object.values(SORT_OPTIONS),
         }
     }
