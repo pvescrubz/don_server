@@ -1,35 +1,20 @@
 import { prisma } from "../../prismaClient"
-import { CUSTOM_FILTRES, SORT_OPTIONS } from "./filters.constans"
+import { SORT_OPTIONS } from "./filters.constans"
 import { TFiltersCs } from "./filters.type"
 
 export class FiltersService {
-    // Статический счётчик запросов
-    private static requestCount: number = 0
-
-    // Получить текущее значение
-    public static getRequestCount(): number {
-        return this.requestCount
-    }
-
-    // Сбросить счётчик (если нужно)
-    public static resetRequestCount(): void {
-        this.requestCount = 0
-    }
-
     async getCSFilters(): Promise<TFiltersCs> {
-        // Увеличиваем счётчик при каждом вызове
-        FiltersService.requestCount++
-
-        console.log(`Количество запросов: ${FiltersService.requestCount}`)
         const category = await prisma.categoryCS.findMany({
             select: {
                 id: true,
                 name: true,
                 ruName: true,
+                groupName: true,
                 type: {
                     select: {
                         id: true,
                         name: true,
+                        groupName: true,
                         previewSkinId: true,
                         previewSkin: {
                             select: {
@@ -45,7 +30,7 @@ export class FiltersService {
         const quality = await prisma.qualityCS.findMany()
         const rarity = await prisma.rarityCS.findMany()
         const phase = await prisma.phaseCS.findMany()
-        const statTrak = await prisma.statTrakCS.findMany()
+        const killCounter = await prisma.killCounterCS.findMany()
         const souvenir = await prisma.souvenirCS.findMany()
 
         return {
@@ -73,17 +58,17 @@ export class FiltersService {
                 ruName: "Фаза",
                 data: phase,
             },
-            statTrak: {
-                id: "statTrak",
-                name: "statTrak",
-                ruName: "StatTrak™",
-                data: [statTrak[0], CUSTOM_FILTRES.noStatTrak],
+            killCounter: {
+                id: "killCounter",
+                name: "killCounter",
+                ruName: "Счетчик убийств",
+                data: killCounter,
             },
             souvenir: {
                 id: "souvenir",
                 name: "souvenir",
-                ruName: "Cувенирное",
-                data: [souvenir[0], CUSTOM_FILTRES.noSouvenir],
+                ruName: "Сувенирность",
+                data: souvenir,
             },
 
             sort: Object.values(SORT_OPTIONS),
@@ -120,7 +105,7 @@ export class FiltersService {
             quality: {
                 id: "quality",
                 name: "quality",
-                ruName: "Износ",
+                ruName: "Качество",
                 data: quality,
             },
             rarity: {
@@ -133,6 +118,7 @@ export class FiltersService {
             sort: Object.values(SORT_OPTIONS),
         }
     }
+
     async getRustFilters() {
         const type = await prisma.typeRUST.findMany()
 

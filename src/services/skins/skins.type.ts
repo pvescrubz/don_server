@@ -1,5 +1,5 @@
-import { SkinCS, SkinDOTA, SkinRUST } from "@prisma/client";
-import { prisma } from "../../prismaClient";
+import { SkinCS } from "@prisma/client"
+import { prisma } from "../../prismaClient"
 
 export type TGameKey = keyof TGame
 
@@ -19,21 +19,15 @@ export type TQueryParams = {
     souvenir?: string
 }
 
-export type TSkinsResponse = {
-    data: (SkinCS | SkinDOTA | SkinRUST)[]
-    meta: TResponseMeta
+export type TSkinsRes = {
+    data: SkinCS[]
+    meta: TMetaRes
 }
 
-export type TResponseMeta = {
+export type TMetaRes = {
     currentPage: number
     totalPages: number
     totalItems: number
     itemsPerPage: number
 }
 
-export type TPaginationMeta = {
-    currentPage: number
-    totalPages: number
-    totalItems: number
-    itemsPerPage: number
-}

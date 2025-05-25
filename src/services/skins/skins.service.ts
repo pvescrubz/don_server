@@ -1,6 +1,6 @@
 import { prisma } from "../../prismaClient"
-import { CUSTOM_FILTRES_ARR, SORT_OPTIONS } from "../filters/filters.constans"
-import { TGame, TGameKey, TPaginationMeta, TSkinsResponse } from "./skins.type"
+import { SORT_OPTIONS } from "../filters/filters.constans"
+import { TGame, TGameKey, TMetaRes, TSkinsRes } from "./skins.type"
 
 export class SkinsService {
     private GAME_TO_MODEL: TGame
@@ -13,22 +13,22 @@ export class SkinsService {
         }
     }
 
-    async getSkins(params: Record<string, string>): Promise<TSkinsResponse> {
+    async getSkins(params: Record<string, string>): Promise<TSkinsRes> {
         const {
             game,
-            page = "1",
-            perPage = "40",
+            page,
+            perPage,
             sort = SORT_OPTIONS.POPULAR.name,
             ...filters
         } = params
-
-        const pageNumber = parseInt(page, 10)
-        const perPageNumber = Math.min(Math.max(parseInt(perPage, 10), 1), 100)
 
         const normalizedGame = game.toLowerCase() as TGameKey
         const model = this.GAME_TO_MODEL[normalizedGame]
 
         if (!model) throw new Error(`Ошибка при получении скинов`)
+
+        const pageNumber = parseInt(page, 10)
+        const perPageNumber = Math.min(Math.max(parseInt(perPage, 10), 1), 100)
 
         const where = this.buildWhereClause(filters)
 
@@ -43,6 +43,12 @@ export class SkinsService {
                 ...(Object.keys(orderBy).length > 0 && { orderBy }),
                 skip: (pageNumber - 1) * perPageNumber,
                 take: perPageNumber,
+                ...(game === "cs" && {
+                    include: {
+                        killCounter: true,
+                        souvenir: true,
+                    },
+                }),
             }),
             (model as any).count({ where }),
         ])
@@ -69,23 +75,6 @@ export class SkinsService {
 
         this.applyGeneralFilters(where, filters)
         this.applyPriceFilter(where, priceFrom, priceTo)
-        this.applyCustomFilter(where, filters)
-
-        return where
-    }
-
-    private applyCustomFilter(
-        where: Record<string, any>,
-        filters: Record<string, string | undefined>
-    ): Record<string, any> {
-        const foundKeys = CUSTOM_FILTRES_ARR.filter(key => key in filters)
-        if (!foundKeys.length) return where
-
-        foundKeys.forEach(key => {
-            if (`no${key.toLowerCase()}` === filters[key]?.toLowerCase()) {
-                where[key] = null
-            }
-        })
 
         return where
     }
@@ -111,18 +100,12 @@ export class SkinsService {
 
         if (from !== null || to !== null) {
             where.price = {}
-
-            if (from !== null) {
-                where.price.gte = from
-            }
-
-            if (to !== null) {
-                where.price.lte = to
-            }
+            if (from !== null) where.price.gte = from
+            if (to !== null) where.price.lte = to
         }
     }
 
-    private getPaginationMeta(totalCount: number, page: number, perPage: number): TPaginationMeta {
+    private getPaginationMeta(totalCount: number, page: number, perPage: number): TMetaRes {
         const totalPages = Math.ceil(totalCount / perPage)
         return {
             currentPage: page,
@@ -138,7 +121,6 @@ export class SkinsService {
 
     private parsePrice(value?: string): number | null {
         if (!value) return null
-
         const num = parseInt(value, 10)
         return isNaN(num) ? null : num
     }

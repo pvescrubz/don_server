@@ -1,5 +1,4 @@
-import { SORT_OPTIONS } from "../../services/filters/filters.constans"
-import { TSkinsResponse } from "../../services/skins/skins.type"
+import { TSkinsRes } from "../../services/skins/skins.type"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
@@ -24,7 +23,7 @@ class SkinsProcedure extends Procedure {
             // cs2
             category: { type: "string" },
             phase: { type: "string" },
-            statTrak: { type: "string" },
+            killCounter: { type: "string" },
             souvenir: { type: "string" },
 
             // dota2
@@ -36,20 +35,68 @@ class SkinsProcedure extends Procedure {
             priceTo: { type: "integer", minimum: 0 },
             sort: {
                 type: "string",
-                enum: Object.values(SORT_OPTIONS).map(opt => opt.name),
-                default: SORT_OPTIONS.POPULAR.name,
             },
             page: { type: "integer", minimum: 1, default: 1 },
-            perPage: { type: "integer", minimum: 1, default: 40 },
+            perPage: { type: "integer", minimum: 1, default: 48},
         },
     }
 
     static resultSchema = {
         type: "object",
-        additionalProperties: true,
+        additionalProperties: false,
+        properties: {
+            data: {
+                type: "array",
+                items: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {
+                        id: { type: "string" },
+                        name: { type: "string" },
+                        price: { type: "string" },
+                        imageUrl: { type: "string" },
+                        image: { type: "string" },
+                        slug: { type: "string" },
+
+                        //cs
+                        killCounter: {
+                            type: "object",
+                            additionalProperties: true,
+                            properties: {
+                                id: { type: "string" },
+                                name: { type: "string" },
+                                ruName: { type: "string" },
+                                groupName: { type: "string" },
+                                flag: { type: "boolean" },
+                            },
+                        },
+                        souvenir: {
+                            type: "object",
+                            additionalProperties: true,
+                            properties: {
+                                id: { type: "string" },
+                                name: { type: "string" },
+                                ruName: { type: "string" },
+                                groupName: { type: "string" },
+                                flag: { type: "boolean" },
+                            },
+                        },
+                    },
+                },
+            },
+            meta: {
+                type: "object",
+                properties: {
+                    currentPage: { type: "integer" },
+                    totalPages: { type: "integer" },
+                    totalItems: { type: "integer" },
+                    itemsPerPage: { type: "integer" },
+                },
+            },
+        },
     }
 
-    async execute(params: Record<string, string>): Promise<TSkinsResponse> {
+    async execute(params: Record<string, string>): Promise<TSkinsRes> {
         return this.services.skins.getSkins(params)
     }
 }
