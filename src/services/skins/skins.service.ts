@@ -1,6 +1,6 @@
 import { prisma } from "../../prismaClient"
 import { SORT_OPTIONS } from "../filters/filters.constans"
-import { TGame, TGameKey, TMetaRes, TSkinsRes } from "./skins.type"
+import { TGame, TGameKey, TMetaRes, TSkinData, TSkinsRes } from "./skins.type"
 
 export class SkinsService {
     private GAME_TO_MODEL: TGame
@@ -14,13 +14,7 @@ export class SkinsService {
     }
 
     async getSkins(params: Record<string, string>): Promise<TSkinsRes> {
-        const {
-            game,
-            page,
-            perPage,
-            sort = SORT_OPTIONS.POPULAR.name,
-            ...filters
-        } = params
+        const { game, page, perPage, sort = SORT_OPTIONS.POPULAR.name, ...filters } = params
 
         const normalizedGame = game.toLowerCase() as TGameKey
         const model = this.GAME_TO_MODEL[normalizedGame]
@@ -59,6 +53,53 @@ export class SkinsService {
             data: items,
             meta,
         }
+    }
+
+    async getWeekly(): Promise<TSkinData> {
+        const weeklyProducts = await prisma.weeklyProducts.findMany({
+            include: {
+                skinsCS: {
+                    include: { skin: true },
+                },
+                skinsDOTA: {
+                    include: { skin: true },
+                },
+                skinsRUST: {
+                    include: { skin: true },
+                },
+            },
+        })
+        const allSkins = weeklyProducts.flatMap(product => [
+            ...product.skinsCS.map(s => ({ ...s.skin, game: "CS" })),
+            ...product.skinsDOTA.map(s => ({ ...s.skin, game: "DOTA" })),
+            ...product.skinsRUST.map(s => ({ ...s.skin, game: "RUST" })),
+        ])
+
+        const shuffled = allSkins.sort(() => 0.5 - Math.random())
+        return shuffled
+    }
+    async getLastBuy(): Promise<TSkinData> {
+        const lastBuy = await prisma.lastBuy.findMany({
+            include: {
+                skinsCS: {
+                    include: { skin: true },
+                },
+                skinsDOTA: {
+                    include: { skin: true },
+                },
+                skinsRUST: {
+                    include: { skin: true },
+                },
+            },
+        })
+        const allSkins = lastBuy.flatMap(product => [
+            ...product.skinsCS.map(s => ({ ...s.skin, game: "CS" })),
+            ...product.skinsDOTA.map(s => ({ ...s.skin, game: "DOTA" })),
+            ...product.skinsRUST.map(s => ({ ...s.skin, game: "RUST" })),
+        ])
+
+        const shuffled = allSkins.sort(() => 0.5 - Math.random())
+        return shuffled
     }
 
     private buildWhereClause(params: Record<string, string | undefined>): Record<string, any> {

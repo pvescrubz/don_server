@@ -30,6 +30,7 @@
         "fastify": "^5.2.1",
         "fastify-plugin": "^5.0.1",
         "jsonwebtoken": "^9.0.2",
+        "node-cron": "^4.0.7",
         "nodemailer": "^7.0.3",
         "passport-steam": "^1.0.18",
         "react": "19.1.0",
