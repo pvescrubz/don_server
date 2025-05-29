@@ -70,6 +70,10 @@ model SkinCS {
 
   previewOf TypeCS? @relation(name: "ItemTypeToPreviewSkin")
 
+  weeklyProductsCS WeeklyProductsCS[]
+
+  lastBuyCS LastBuyCS[]
+
   @@index([slug])
   @@index([categoryId])
   @@index([rarityId])
@@ -214,6 +218,10 @@ model SkinDOTA {
   quality   QualityDOTA? @relation(fields: [qualityId], references: [id])
   qualityId String?
 
+  weeklyProductsDOTA WeeklyProductsDOTA[]
+
+  lastBuyDOTA LastBuyDOTA[]
+
   @@index([slug])
   @@index([gameId])
   @@index([heroId])
@@ -296,6 +304,9 @@ model SkinRUST {
   type   TypeRUST? @relation(fields: [typeId], references: [id])
   typeId String?
 
+  weeklyProductsRUST WeeklyProductsRUST[]
+  lastBuyRUST        LastBuyRUST[]
+
   @@index([slug])
   @@index([typeId])
   @@map("skinRUST")
@@ -311,4 +322,102 @@ model TypeRUST {
 
   @@index([name])
   @@map("typeRUST")
+}
+
+model WeeklyProducts {
+  id        String @id @default(cuid())
+  name      String @unique
+  groupName String @default("Игра")
+
+  skinsCS   WeeklyProductsCS[]
+  skinsDOTA WeeklyProductsDOTA[]
+  skinsRUST WeeklyProductsRUST[]
+
+  @@index([name])
+  @@map("WeeklyProducts")
+}
+
+model WeeklyProductsCS {
+  id String @id @default(cuid())
+
+  weeklyProductId String
+  weeklyProduct   WeeklyProducts @relation(fields: [weeklyProductId], references: [id])
+
+  skinId String
+  skin   SkinCS @relation(fields: [skinId], references: [id])
+
+  @@map("weeklyProductsCS")
+}
+
+model WeeklyProductsDOTA {
+  id String @id @default(cuid())
+
+  weeklyProductId String
+  weeklyProduct   WeeklyProducts @relation(fields: [weeklyProductId], references: [id])
+
+  skinId String
+  skin   SkinDOTA @relation(fields: [skinId], references: [id])
+
+  @@map("weeklyProductsDOTA")
+}
+
+model WeeklyProductsRUST {
+  id String @id @default(cuid())
+
+  weeklyProductId String
+  weeklyProduct   WeeklyProducts @relation(fields: [weeklyProductId], references: [id])
+
+  skinId String
+  skin   SkinRUST @relation(fields: [skinId], references: [id])
+
+  @@map("weeklyProductsRUST")
+}
+
+model LastBuy {
+  id        String @id @default(cuid())
+  name      String @unique
+  groupName String @default("Игра")
+
+  skinsCS   LastBuyCS[]
+  skinsDOTA LastBuyDOTA[]
+  skinsRUST LastBuyRUST[]
+
+  @@index([name])
+  @@map("LastBuy")
+}
+
+model LastBuyCS {
+  id String @id @default(cuid())
+
+  lastBuyId String
+  lastBuy   LastBuy @relation(fields: [lastBuyId], references: [id])
+
+  skinId String
+  skin   SkinCS @relation(fields: [skinId], references: [id])
+
+  @@map("lastBuyCS")
+}
+
+model LastBuyDOTA {
+  id String @id @default(cuid())
+
+  lastBuyId String
+  lastBuy   LastBuy @relation(fields: [lastBuyId], references: [id])
+
+  skinId String
+  skin   SkinDOTA @relation(fields: [skinId], references: [id])
+
+  @@map("lastBuyDOTA")
+}
+
+model LastBuyRUST {
+  id String @id @default(cuid())
+
+  lastBuyId String
+  lastBuy   LastBuy @relation(fields: [lastBuyId], references: [id])
+
+  skinId String
+  skin   SkinRUST @relation(fields: [skinId], references: [id])
+
+  @@map("lastBuyRUST")
 }
