@@ -24,7 +24,6 @@ class SkinsProcedure extends Procedure {
             category: { type: "string" },
             phase: { type: "string" },
             killCounter: { type: "string" },
-            souvenir: { type: "string" },
 
             // dota2
             hero: { type: "string" },
@@ -37,7 +36,7 @@ class SkinsProcedure extends Procedure {
                 type: "string",
             },
             page: { type: "integer", minimum: 1, default: 1 },
-            perPage: { type: "integer", minimum: 1, default: 48},
+            perPage: { type: "integer", minimum: 1, default: 48 },
         },
     }
 
@@ -57,29 +56,22 @@ class SkinsProcedure extends Procedure {
                         imageUrl: { type: "string" },
                         image: { type: "string" },
                         slug: { type: "string" },
+                        game: {
+                            type: "object",
+                            additionalProperties: false,
+                            properties: {
+                                name: { type: "string" },
+                            },
+                        },
 
                         //cs
                         killCounter: {
                             type: "object",
                             additionalProperties: true,
-                            properties: {
-                                id: { type: "string" },
-                                name: { type: "string" },
-                                ruName: { type: "string" },
-                                groupName: { type: "string" },
-                                flag: { type: "boolean" },
-                            },
                         },
                         souvenir: {
                             type: "object",
                             additionalProperties: true,
-                            properties: {
-                                id: { type: "string" },
-                                name: { type: "string" },
-                                ruName: { type: "string" },
-                                groupName: { type: "string" },
-                                flag: { type: "boolean" },
-                            },
                         },
                     },
                 },

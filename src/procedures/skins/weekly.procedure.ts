@@ -7,8 +7,7 @@ class SkinsProcedure extends Procedure {
     static title = "weekly"
     static method = API_METHODS.GET
     static tags: TTags = [API_GUARD.PUBLIC, MAIN_TAGS.SKINS]
-    static summary =
-        "Фильрация и поиск: Значение игры в реквест параметре / остальные значения в квери"
+    static summary = "Получить лучшие предложения недели"
 
     static paramsSchema = {
         type: "object",
@@ -28,29 +27,22 @@ class SkinsProcedure extends Procedure {
                 imageUrl: { type: "string" },
                 image: { type: "string" },
                 slug: { type: "string" },
+                game: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {
+                        name: { type: "string" },
+                    },
+                },
 
                 //cs
                 killCounter: {
                     type: "object",
                     additionalProperties: true,
-                    properties: {
-                        id: { type: "string" },
-                        name: { type: "string" },
-                        ruName: { type: "string" },
-                        groupName: { type: "string" },
-                        flag: { type: "boolean" },
-                    },
                 },
                 souvenir: {
                     type: "object",
                     additionalProperties: true,
-                    properties: {
-                        id: { type: "string" },
-                        name: { type: "string" },
-                        ruName: { type: "string" },
-                        groupName: { type: "string" },
-                        flag: { type: "boolean" },
-                    },
                 },
             },
         },

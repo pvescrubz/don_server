@@ -11,8 +11,8 @@ export class WeeklyProductService {
 
     private async updateWeeklyProduct() {
         const [csProduct, dotaProduct, rustProduct] = await Promise.all([
-            this.getOrCreateWeeklyProduct("cs"),
-            this.getOrCreateWeeklyProduct("dota"),
+            this.getOrCreateWeeklyProduct("cs2"),
+            this.getOrCreateWeeklyProduct("dota2"),
             this.getOrCreateWeeklyProduct("rust"),
         ])
 

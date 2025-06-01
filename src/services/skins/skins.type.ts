@@ -4,8 +4,8 @@ import { prisma } from "../../prismaClient"
 export type TGameKey = keyof TGame
 
 export type TGame = {
-    cs: typeof prisma.skinCS
-    dota: typeof prisma.skinDOTA
+    cs2: typeof prisma.skinCS
+    dota2: typeof prisma.skinDOTA
     rust: typeof prisma.skinRUST
 }
 
@@ -32,3 +32,4 @@ export type TMetaRes = {
     totalItems: number
     itemsPerPage: number
 }
+
