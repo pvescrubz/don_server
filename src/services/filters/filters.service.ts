@@ -76,8 +76,8 @@ export class FiltersService {
     }
 
     async getDotaFilters() {
-        const quality = await prisma.qualityCS.findMany()
-        const rarity = await prisma.rarityCS.findMany()
+        const quality = await prisma.qualityDOTA.findMany()
+        const rarity = await prisma.rarityDOTA.findMany()
         const type = await prisma.typeDOTA.findMany()
         const hero = await prisma.heroDOTA.findMany()
         const slot = await prisma.slotDOTA.findMany()

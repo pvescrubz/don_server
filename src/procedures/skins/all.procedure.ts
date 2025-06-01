@@ -24,6 +24,7 @@ class SkinsProcedure extends Procedure {
             category: { type: "string" },
             phase: { type: "string" },
             killCounter: { type: "string" },
+            souvenir: { type: "string" },
 
             // dota2
             hero: { type: "string" },
