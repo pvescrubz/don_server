@@ -1,3 +1,4 @@
+import { SkinCS, SkinDOTA, SkinRUST } from "@prisma/client"
 import { prisma } from "../../prismaClient"
 import { SORT_OPTIONS } from "../filters/filters.constans"
 import { TGame, TGameKey, TMetaRes, TSkinData, TSkinsRes } from "./skins.type"
@@ -7,8 +8,8 @@ export class SkinsService {
 
     constructor() {
         this.GAME_TO_MODEL = {
-            cs: prisma.skinCS,
-            dota: prisma.skinDOTA,
+            cs2: prisma.skinCS,
+            dota2: prisma.skinDOTA,
             rust: prisma.skinRUST,
         }
     }
@@ -37,12 +38,13 @@ export class SkinsService {
                 ...(Object.keys(orderBy).length > 0 && { orderBy }),
                 skip: (pageNumber - 1) * perPageNumber,
                 take: perPageNumber,
-                ...(game === "cs" && {
-                    include: {
+                include: {
+                    game: true,
+                    ...(game === "cs2" && {
                         killCounter: true,
                         souvenir: true,
-                    },
-                }),
+                    }),
+                },
             }),
             (model as any).count({ where }),
         ])
@@ -59,20 +61,40 @@ export class SkinsService {
         const weeklyProducts = await prisma.weeklyProducts.findMany({
             include: {
                 skinsCS: {
-                    include: { skin: true },
+                    include: {
+                        skin: {
+                            include: {
+                                game: true,
+                                killCounter: true,
+                                souvenir: true,
+                            },
+                        },
+                    },
                 },
                 skinsDOTA: {
-                    include: { skin: true },
+                    include: {
+                        skin: {
+                            include: {
+                                game: true,
+                            },
+                        },
+                    },
                 },
                 skinsRUST: {
-                    include: { skin: true },
+                    include: {
+                        skin: {
+                            include: {
+                                game: true,
+                            },
+                        },
+                    },
                 },
             },
         })
         const allSkins = weeklyProducts.flatMap(product => [
-            ...product.skinsCS.map(s => ({ ...s.skin, game: "CS" })),
-            ...product.skinsDOTA.map(s => ({ ...s.skin, game: "DOTA" })),
-            ...product.skinsRUST.map(s => ({ ...s.skin, game: "RUST" })),
+            ...product.skinsCS.map(s => ({ ...s.skin })),
+            ...product.skinsDOTA.map(s => ({ ...s.skin })),
+            ...product.skinsRUST.map(s => ({ ...s.skin })),
         ])
 
         const shuffled = allSkins.sort(() => 0.5 - Math.random())
@@ -82,26 +104,86 @@ export class SkinsService {
         const lastBuy = await prisma.lastBuy.findMany({
             include: {
                 skinsCS: {
-                    include: { skin: true },
+                    include: {
+                        skin: {
+                            include: {
+                                game: true,
+                                killCounter: true,
+                                souvenir: true,
+                            },
+                        },
+                    },
                 },
                 skinsDOTA: {
-                    include: { skin: true },
+                    include: {
+                        skin: {
+                            include: {
+                                game: true,
+                            },
+                        },
+                    },
                 },
                 skinsRUST: {
-                    include: { skin: true },
+                    include: {
+                        skin: {
+                            include: {
+                                game: true,
+                            },
+                        },
+                    },
                 },
             },
         })
+
         const allSkins = lastBuy.flatMap(product => [
-            ...product.skinsCS.map(s => ({ ...s.skin, game: "CS" })),
-            ...product.skinsDOTA.map(s => ({ ...s.skin, game: "DOTA" })),
-            ...product.skinsRUST.map(s => ({ ...s.skin, game: "RUST" })),
+            ...product.skinsCS.map(s => ({ ...s.skin })),
+            ...product.skinsDOTA.map(s => ({ ...s.skin })),
+            ...product.skinsRUST.map(s => ({ ...s.skin })),
         ])
 
         const shuffled = allSkins.sort(() => 0.5 - Math.random())
         return shuffled
     }
 
+    async getSkinCsBySlug(slug: string): Promise<SkinCS | null> {
+        return await prisma.skinCS.findUnique({
+            where: { slug },
+            include: {
+                category: true,
+                quality: true,
+                rarity: true,
+                type: true,
+                phase: true,
+                souvenir: true,
+                killCounter: true,
+                game: true,
+            },
+        })
+    }
+
+    async getSkinDotaBySlug(slug: string): Promise<SkinDOTA | null> {
+        return await prisma.skinDOTA.findUnique({
+            where: { slug },
+            include: {
+                hero: true,
+                slot: true,
+                type: true,
+                rarity: true,
+                quality: true,
+                game: true,
+            },
+        })
+    }
+
+    async getSkinRustBySlug(slug: string): Promise<SkinRUST | null> {
+        return await prisma.skinRUST.findUnique({
+            where: { slug },
+            include: {
+                type: true,
+                game: true,
+            },
+        })
+    }
     private buildWhereClause(params: Record<string, string | undefined>): Record<string, any> {
         const where: Record<string, any> = {}
 

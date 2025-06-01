@@ -11,8 +11,8 @@ export class LastBuyService {
 
     private async updateLastBuy() {
         const [csProduct, dotaProduct, rustProduct] = await Promise.all([
-            this.getOrCreateLastBuy("cs"),
-            this.getOrCreateLastBuy("dota"),
+            this.getOrCreateLastBuy("cs2"),
+            this.getOrCreateLastBuy("dota2"),
             this.getOrCreateLastBuy("rust"),
         ])
 
