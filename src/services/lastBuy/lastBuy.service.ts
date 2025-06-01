@@ -3,7 +3,7 @@ import { prisma } from "../../prismaClient"
 
 export class LastBuyService {
     async init() {
-        // await this.updateLastBuy()
+        await this.updateLastBuy()
         cron.schedule("*/7 * * * *", async () => {
             await this.updateLastBuy()
         })

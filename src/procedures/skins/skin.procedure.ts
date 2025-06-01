@@ -37,14 +37,12 @@ class SkinsProcedure extends Procedure {
                 },
                 nullable: true,
             },
-
-            type: {
+            game: {
                 type: "object",
                 nullable: true,
                 additionalProperties: true,
             },
-
-            game: {
+            type: {
                 type: "object",
                 nullable: true,
                 additionalProperties: true,
