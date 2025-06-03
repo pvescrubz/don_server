@@ -3,7 +3,7 @@ import { prisma } from "../../prismaClient"
 
 export class WeeklyProductService {
     async init() {
-        // await this.updateWeeklyProduct()
+        await this.updateWeeklyProduct()
         cron.schedule("0 3 * * 0", async () => {
             await this.updateWeeklyProduct()
         })
