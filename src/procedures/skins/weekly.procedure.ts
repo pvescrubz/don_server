@@ -1,4 +1,5 @@
-import { TSkinData } from "../../services/skins/skins.type"
+
+import { Skin } from "@prisma/client"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
@@ -48,7 +49,7 @@ class SkinsProcedure extends Procedure {
         },
     }
 
-    async execute(): Promise<TSkinData> {
+    async execute(): Promise<Skin[]> {
         return this.services.skins.getWeekly()
     }
 }

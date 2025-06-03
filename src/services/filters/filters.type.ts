@@ -1,28 +1,42 @@
-import { CategoryCS, KillCounterCS, PhaseCS, QualityCS, RarityCS, SouvenirCS } from "@prisma/client"
+
+import { Category, Exterior, KillCounter, Phase, Rarity, Souvenir, Type } from "@prisma/client"
+
 
 export type TSortName = "popular" | "asc" | "desc"
 
-export type ISortItem = {
+export interface ISortItem {
     id: string
     name: TSortName
     ruName: string
 }
+export interface ISort {
+    sort: ISortItem[]
+}
 
-export type TFilterName = keyof TFiltersCs
-
-export type TFilter = {
+export interface IFilter {
     id: string
     name: string
     ruName?: string
-    data: (CategoryCS | QualityCS | RarityCS | PhaseCS | KillCounterCS | SouvenirCS)[]
+    data: (Rarity | Type | Category | Souvenir | Exterior | KillCounter | Phase)[]
 }
 
-export type TFiltersCs = {
-    category: TFilter
-    quality: TFilter
-    rarity: TFilter
-    phase: TFilter
-    killCounter: TFilter
-    souvenir: TFilter
-    sort: ISortItem[]
+export interface IFiltersDOTA extends ISort {
+    rarity: IFilter
+    type: IFilter
+    hero: IFilter
+    slot: IFilter
+    quality: IFilter
+}
+
+export interface IFiltersCS extends ISort {
+    rarity: IFilter
+    category: IFilter
+    souvenir: IFilter
+    exterior: IFilter
+    killCounter: IFilter
+    phase: IFilter
+}
+
+export interface IFiltersRUST extends ISort {
+    type: IFilter
 }

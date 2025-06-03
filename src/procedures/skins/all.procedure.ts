@@ -4,7 +4,7 @@ import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
 
 class SkinsProcedure extends Procedure {
-    static title = ":game"
+    static title = "all"
     static method = API_METHODS.GET
     static tags: TTags = [API_GUARD.PUBLIC, MAIN_TAGS.SKINS]
     static summary =
@@ -13,20 +13,24 @@ class SkinsProcedure extends Procedure {
     static paramsSchema = {
         type: "object",
         additionalProperties: false,
+        required: ["game"],
         properties: {
+            game: { type: "string" },
             // global
-            quality: { type: "string" },
             rarity: { type: "string" },
             type: { type: "string" },
             search: { type: "string" },
 
             // cs2
             category: { type: "string" },
+            exterior: { type: "string" },
+            model: { type: "string" },
             phase: { type: "string" },
             killCounter: { type: "string" },
             souvenir: { type: "string" },
 
             // dota2
+            quality: { type: "string" },
             hero: { type: "string" },
             slot: { type: "string" },
 

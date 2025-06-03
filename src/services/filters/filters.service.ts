@@ -1,16 +1,27 @@
 import { prisma } from "../../prismaClient"
 import { SORT_OPTIONS } from "./filters.constans"
-import { TFiltersCs } from "./filters.type"
+import { IFiltersCS, IFiltersDOTA, IFiltersRUST } from "./filters.type"
 
 export class FiltersService {
-    async getCSFilters(): Promise<TFiltersCs> {
-        const category = await prisma.categoryCS.findMany({
+    async getFiltersCS(): Promise<IFiltersCS> {
+        const game = await prisma.game.findUnique({
+            where: {
+                name: "cs2",
+            },
+        })
+           const rarity = await prisma.rarity.findMany({
+            where: {
+                gameId: game?.id,
+            },
+        })
+
+        const category = await prisma.category.findMany({
             select: {
                 id: true,
                 name: true,
                 ruName: true,
                 groupName: true,
-                type: {
+                model: {
                     select: {
                         id: true,
                         name: true,
@@ -27,11 +38,11 @@ export class FiltersService {
             },
         })
 
-        const quality = await prisma.qualityCS.findMany()
-        const rarity = await prisma.rarityCS.findMany()
-        const phase = await prisma.phaseCS.findMany()
-        const killCounter = await prisma.killCounterCS.findMany()
-        const souvenir = await prisma.souvenirCS.findMany()
+        const exterior = await prisma.exterior.findMany()
+
+        const phase = await prisma.phase.findMany()
+        const killCounter = await prisma.killCounter.findMany()
+        const souvenir = await prisma.souvenir.findMany()
 
         return {
             category: {
@@ -40,11 +51,11 @@ export class FiltersService {
                 ruName: "Категории",
                 data: category,
             },
-            quality: {
-                id: "quality",
-                name: "quality",
+            exterior: {
+                id: "exterior",
+                name: "exterior",
                 ruName: "Износ",
-                data: quality,
+                data: exterior,
             },
             rarity: {
                 id: "rarity",
@@ -75,12 +86,28 @@ export class FiltersService {
         }
     }
 
-    async getDotaFilters() {
-        const quality = await prisma.qualityDOTA.findMany()
-        const rarity = await prisma.rarityDOTA.findMany()
-        const type = await prisma.typeDOTA.findMany()
-        const hero = await prisma.heroDOTA.findMany()
-        const slot = await prisma.slotDOTA.findMany()
+    async getFiltersDOTA(): Promise<IFiltersDOTA> {
+        const quality = await prisma.quality.findMany()
+        // const rarity = await prisma.rarity.findMany()
+        const hero = await prisma.hero.findMany()
+        const slot = await prisma.slot.findMany()
+
+        const game = await prisma.game.findUnique({
+            where: {
+                name: "dota2",
+            },
+        })
+        const rarity = await prisma.rarity.findMany({
+            where: {
+                gameId: game?.id,
+            },
+        })
+
+        const type = await prisma.type.findMany({
+            where: {
+                gameId: game?.id,
+            },
+        })
 
         return {
             hero: {
@@ -119,8 +146,18 @@ export class FiltersService {
         }
     }
 
-    async getRustFilters() {
-        const type = await prisma.typeRUST.findMany()
+    async getFiltersRUST(): Promise<IFiltersRUST> {
+        const game = await prisma.game.findUnique({
+            where: {
+                name: "rust",
+            },
+        })
+
+        const type = await prisma.type.findMany({
+            where: {
+                gameId: game?.id,
+            },
+        })
 
         return {
             type: {
