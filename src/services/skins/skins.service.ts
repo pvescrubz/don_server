@@ -1,26 +1,11 @@
-import { SkinCS, SkinDOTA, SkinRUST } from "@prisma/client"
+import { Skin } from "@prisma/client"
 import { prisma } from "../../prismaClient"
 import { SORT_OPTIONS } from "../filters/filters.constans"
-import { TGame, TGameKey, TMetaRes, TSkinData, TSkinsRes } from "./skins.type"
+import { TMetaRes, TSkinsRes } from "./skins.type"
 
 export class SkinsService {
-    private GAME_TO_MODEL: TGame
-
-    constructor() {
-        this.GAME_TO_MODEL = {
-            cs2: prisma.skinCS,
-            dota2: prisma.skinDOTA,
-            rust: prisma.skinRUST,
-        }
-    }
-
     async getSkins(params: Record<string, string>): Promise<TSkinsRes> {
-        const { game, page, perPage, sort = SORT_OPTIONS.POPULAR.name, ...filters } = params
-
-        const normalizedGame = game.toLowerCase() as TGameKey
-        const model = this.GAME_TO_MODEL[normalizedGame]
-
-        if (!model) throw new Error(`Ошибка при получении скинов`)
+        const { page, perPage, sort = SORT_OPTIONS.POPULAR.name, ...filters } = params
 
         const pageNumber = parseInt(page, 10)
         const perPageNumber = Math.min(Math.max(parseInt(perPage, 10), 1), 100)
@@ -33,20 +18,21 @@ export class SkinsService {
                 : {}
 
         const [items, totalCount] = await Promise.all([
-            (model as any).findMany({
+            prisma.skin.findMany({
                 where,
                 ...(Object.keys(orderBy).length > 0 && { orderBy }),
                 skip: (pageNumber - 1) * perPageNumber,
                 take: perPageNumber,
                 include: {
                     game: true,
-                    ...(game === "cs2" && {
+                    ...(params.game === "cs2" && {
                         killCounter: true,
                         souvenir: true,
                     }),
                 },
             }),
-            (model as any).count({ where }),
+
+            prisma.skin.count({ where }),
         ])
 
         const meta = this.getPaginationMeta(totalCount, pageNumber, perPageNumber)
@@ -57,133 +43,60 @@ export class SkinsService {
         }
     }
 
-    async getWeekly(): Promise<TSkinData> {
-        const weeklyProducts = await prisma.weeklyProducts.findMany({
-            include: {
-                skinsCS: {
-                    include: {
-                        skin: {
-                            include: {
-                                game: true,
-                                killCounter: true,
-                                souvenir: true,
-                            },
-                        },
-                    },
-                },
-                skinsDOTA: {
-                    include: {
-                        skin: {
-                            include: {
-                                game: true,
-                            },
-                        },
-                    },
-                },
-                skinsRUST: {
-                    include: {
-                        skin: {
-                            include: {
-                                game: true,
-                            },
-                        },
-                    },
-                },
-            },
-        })
-        const allSkins = weeklyProducts.flatMap(product => [
-            ...product.skinsCS.map(s => ({ ...s.skin })),
-            ...product.skinsDOTA.map(s => ({ ...s.skin })),
-            ...product.skinsRUST.map(s => ({ ...s.skin })),
-        ])
-
-        const shuffled = allSkins.sort(() => 0.5 - Math.random())
-        return shuffled
-    }
-    async getLastBuy(): Promise<TSkinData> {
-        const lastBuy = await prisma.lastBuy.findMany({
-            include: {
-                skinsCS: {
-                    include: {
-                        skin: {
-                            include: {
-                                game: true,
-                                killCounter: true,
-                                souvenir: true,
-                            },
-                        },
-                    },
-                },
-                skinsDOTA: {
-                    include: {
-                        skin: {
-                            include: {
-                                game: true,
-                            },
-                        },
-                    },
-                },
-                skinsRUST: {
-                    include: {
-                        skin: {
-                            include: {
-                                game: true,
-                            },
-                        },
-                    },
-                },
-            },
-        })
-
-        const allSkins = lastBuy.flatMap(product => [
-            ...product.skinsCS.map(s => ({ ...s.skin })),
-            ...product.skinsDOTA.map(s => ({ ...s.skin })),
-            ...product.skinsRUST.map(s => ({ ...s.skin })),
-        ])
-
-        const shuffled = allSkins.sort(() => 0.5 - Math.random())
-        return shuffled
-    }
-
-    async getSkinCsBySlug(slug: string): Promise<SkinCS | null> {
-        return await prisma.skinCS.findUnique({
+    async getSkin(slug: string): Promise<Skin | null> {
+        return await prisma.skin.findUnique({
             where: { slug },
             include: {
                 category: true,
                 quality: true,
+                model: true,
                 rarity: true,
                 type: true,
                 phase: true,
                 souvenir: true,
                 killCounter: true,
                 game: true,
-            },
-        })
-    }
-
-    async getSkinDotaBySlug(slug: string): Promise<SkinDOTA | null> {
-        return await prisma.skinDOTA.findUnique({
-            where: { slug },
-            include: {
+                exterior: true,
                 hero: true,
                 slot: true,
-                type: true,
-                rarity: true,
-                quality: true,
-                game: true,
             },
         })
     }
 
-    async getSkinRustBySlug(slug: string): Promise<SkinRUST | null> {
-        return await prisma.skinRUST.findUnique({
-            where: { slug },
+    async getWeekly(): Promise<Skin[]> {
+        const weeklyProducts = await prisma.weeklyProducts.findMany({
             include: {
-                type: true,
-                game: true,
+                skin: {
+                    include: {
+                        game: true,
+                    },
+                },
             },
         })
+
+        const allSkins = weeklyProducts.flatMap(product => (product.skin ? [product.skin] : []))
+
+        const shuffled = allSkins.sort(() => 0.5 - Math.random())
+        return shuffled
     }
+
+    async getLastBuy(): Promise<Skin[]> {
+        const lastBuy = await prisma.lastBuy.findMany({
+            include: {
+                skin: {
+                    include: {
+                        game: true,
+                    },
+                },
+            },
+        })
+
+        const allSkins = lastBuy.flatMap(product => (product.skin ? [product.skin] : []))
+
+        const shuffled = allSkins.sort(() => 0.5 - Math.random())
+        return shuffled
+    }
+
     private buildWhereClause(params: Record<string, string | undefined>): Record<string, any> {
         const where: Record<string, any> = {}
 

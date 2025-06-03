@@ -7,6 +7,7 @@ import { passportPlugin } from "./plugins/passport"
 import getProcedures from "./procedures"
 import router from "./router"
 import EmailService from "./services/email/email.service"
+// import FiltersService from "./services/filters/filters.service"
 import FiltersService from "./services/filters/filters.service"
 import LastBuyService from "./services/lastBuy/lastBuy.service"
 import PassportService from "./services/passport/passport.service"
@@ -48,7 +49,10 @@ export default async (config: IConfig) => {
         services,
     })
 
-    await Promise.all([services.weeklyProduct.init(), services.lastBuy.init()])
+    await Promise.all([
+        services.weeklyProduct.init(),
+        services.lastBuy.init()
+    ])
 
     return app
 }

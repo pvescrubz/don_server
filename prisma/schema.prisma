@@ -34,7 +34,7 @@ enum Role {
   SUPER_ADMIN
 }
 
-model SkinCS {
+model Skin {
   id       String  @id @default(cuid())
   name     String
   price    Decimal @db.Decimal(12, 2)
@@ -44,381 +44,236 @@ model SkinCS {
 
   description Json?
 
+  // Общие поля
   game   Game?   @relation(fields: [gameId], references: [id])
   gameId String?
 
-  category   CategoryCS? @relation(fields: [categoryId], references: [id])
+  rarity   Rarity? @relation(fields: [rarityId], references: [id])
+  rarityId String?
+
+  type   Type?   @relation(fields: [typeId], references: [id])
+  typeId String?
+
+  // Только для CS
+  category   Category? @relation(fields: [categoryId], references: [id])
   categoryId String?
 
-  quality   QualityCS? @relation(fields: [qualityId], references: [id])
-  qualityId String?
+  model   Model?  @relation(fields: [modelId], references: [id])
+  modelId String?
 
-  rarity   RarityCS? @relation(fields: [rarityId], references: [id])
-  rarityId String?
+  previewOf Model? @relation(name: "ModelToPreviewSkin")
 
-  type   TypeCS? @relation(fields: [typeId], references: [id])
-  typeId String?
-
-  phase   PhaseCS? @relation(fields: [phaseId], references: [id])
-  phaseId String?
-
-  souvenir   SouvenirCS? @relation(fields: [souvenirId], references: [id])
+  souvenir   Souvenir? @relation(fields: [souvenirId], references: [id])
   souvenirId String?
 
-  killCounter   KillCounterCS? @relation(fields: [killCounterId], references: [id])
+  exterior   Exterior? @relation(fields: [exteriorId], references: [id])
+  exteriorId String?
+
+  killCounter   KillCounter? @relation(fields: [killCounterId], references: [id])
   killCounterId String?
 
-  previewOf TypeCS? @relation(name: "ItemTypeToPreviewSkin")
+  phase   Phase?  @relation(fields: [phaseId], references: [id])
+  phaseId String?
 
-  weeklyProductsCS WeeklyProductsCS[]
-
-  lastBuyCS LastBuyCS[]
-
-  @@index([slug])
-  @@index([categoryId])
-  @@index([rarityId])
-  @@index([typeId])
-  @@index([qualityId])
-  @@index([phaseId])
-  @@index([killCounterId])
-  @@index([souvenirId])
-  @@index([gameId])
-  @@map("skinCS")
-}
-
-model SkinDOTA {
-  id       String  @id @default(cuid())
-  name     String
-  price    Decimal @db.Decimal(12, 2)
-  imageUrl String
-  image    String
-  slug     String  @unique
-
-  description Json?
-
-  game   Game?   @relation(fields: [gameId], references: [id])
-  gameId String?
-
-  hero   HeroDOTA? @relation(fields: [heroId], references: [id])
+  // Только для DOTA
+  hero   Hero?   @relation(fields: [heroId], references: [id])
   heroId String?
 
-  slot   SlotDOTA? @relation(fields: [slotId], references: [id])
+  slot   Slot?   @relation(fields: [slotId], references: [id])
   slotId String?
 
-  type   TypeDOTA? @relation(fields: [typeId], references: [id])
-  typeId String?
-
-  rarity   RarityDOTA? @relation(fields: [rarityId], references: [id])
-  rarityId String?
-
-  quality   QualityDOTA? @relation(fields: [qualityId], references: [id])
+  quality   Quality? @relation(fields: [qualityId], references: [id])
   qualityId String?
 
-  weeklyProductsDOTA WeeklyProductsDOTA[]
-
-  lastBuyDOTA LastBuyDOTA[]
+  weeklyProducts WeeklyProducts[] @relation("SkinToWeekly")
+  lastBuy        LastBuy[]        @relation("SkinToLastBuy")
 
   @@index([slug])
   @@index([gameId])
+  @@index([rarityId])
+  @@index([typeId])
+  @@index([categoryId])
+  @@index([modelId])
+  @@index([souvenirId])
+  @@index([exteriorId])
+  @@index([killCounterId])
+  @@index([phaseId])
   @@index([heroId])
   @@index([slotId])
-  @@index([typeId])
-  @@index([rarityId])
   @@index([qualityId])
-  @@map("skinDOTA")
+  @@map("skins")
 }
-model SkinRUST {
-  id       String  @id @default(cuid())
-  name     String
-  price    Decimal @db.Decimal(12, 2)
-  imageUrl String
-  image    String
-  slug     String  @unique
 
-  description Json?
+model WeeklyProducts {
+  id        String @id @default(cuid())
+  groupName String @default("Товары недели")
 
-  game   Game?   @relation(fields: [gameId], references: [id])
-  gameId String?
+  skinId String
+  skin   Skin   @relation(fields: [skinId], references: [id], name: "SkinToWeekly")
 
-  type   TypeRUST? @relation(fields: [typeId], references: [id])
-  typeId String?
-
-  weeklyProductsRUST WeeklyProductsRUST[]
-  lastBuyRUST        LastBuyRUST[]
-
-  @@index([slug])
-  @@index([typeId])
-  @@map("skinRUST")
+  @@map("weeklyProducts")
 }
-model SouvenirCS {
-  id        String  @id @default(cuid())
-  name      String  @unique
-  ruName    String  @unique
-  groupName String  @default("Сувенирность")
-  flag      Boolean @default(false)
 
-  skins SkinCS[]
+model LastBuy {
+  id        String @id @default(cuid())
+  groupName String @default("Последние покупки")
+
+  skinId String
+  skin   Skin   @relation(fields: [skinId], references: [id], name: "SkinToLastBuy")
+
+  @@map("lastBuy")
+}
+
+model Category {
+  id        String @id @default(cuid())
+  name      String @unique
+  ruName    String @unique
+  groupName String @default("Категория")
+
+  skins Skin[]
+  model Model[]
 
   @@index([name])
-  @@map("souvenirCS")
+  @@map("category")
 }
 
-model KillCounterCS {
+model Model {
+  id        String @id @default(cuid())
+  name      String @unique
+  groupName String @default("Модель")
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  skins Skin[]
+
+  previewSkinId String? @unique
+  previewSkin   Skin?   @relation(name: "ModelToPreviewSkin", fields: [previewSkinId], references: [id])
+
+  @@index([name])
+  @@map("model")
+}
+
+model Hero {
+  id        String @id @default(cuid())
+  name      String @unique
+  skins     Skin[]
+  groupName String @default("Герой")
+
+  @@index([name])
+  @@map("hero")
+}
+
+model Slot {
+  id        String @id @default(cuid())
+  name      String @unique
+  ruName    String @unique
+  groupName String @default("Слот")
+
+  skins Skin[]
+
+  @@index([name])
+  @@map("slot")
+}
+
+model Quality {
+  id        String @id @default(cuid())
+  name      String @unique
+  groupName String @default("Качество")
+
+  skins Skin[]
+
+  @@index([name])
+  @@map("quality")
+}
+
+model Exterior {
+  id        String @id @default(cuid())
+  name      String @unique
+  ruName    String @unique
+  groupName String @default("Износ")
+
+  skins Skin[]
+
+  @@index([name])
+  @@map("exterior")
+}
+
+model Phase {
+  id        String @id @default(cuid())
+  name      String @unique
+  groupName String @default("Фаза")
+
+  skins Skin[]
+
+  @@index([name])
+  @@map("phase")
+}
+
+model KillCounter {
   ruName    String  @unique
   id        String  @id @default(cuid())
   name      String  @unique
   groupName String  @default("Счётчик убийств")
   flag      Boolean @default(false)
 
-  skins SkinCS[]
+  skins Skin[]
 
   @@index([name])
-  @@map("killCounterCS")
+  @@map("killCounter")
 }
 
-model CategoryCS {
-  id        String @id @default(cuid())
-  name      String @unique
-  ruName    String @unique
-  groupName String @default("Категория")
+model Souvenir {
+  id        String  @id @default(cuid())
+  name      String  @unique
+  ruName    String  @unique
+  groupName String  @default("Сувенирность")
+  flag      Boolean @default(false)
 
-  skins SkinCS[]
-  type  TypeCS[]
+  skins Skin[]
 
   @@index([name])
-  @@map("categoryCS")
+  @@map("souvenir")
 }
 
 model Game {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Игра")
-
-  skinsCS   SkinCS[]
-  skinsDOTA SkinDOTA[]
-  SkinsRUST SkinRUST[]
+  id        String   @id @default(cuid())
+  name      String   @unique
+  groupName String   @default("Игра")
+  skins     Skin[]
+  rarity    Rarity[]
+  type      Type[]
 
   @@index([name])
   @@map("game")
 }
 
-model QualityCS {
-  id        String @id @default(cuid())
-  name      String @unique
-  ruName    String @unique
-  groupName String @default("Износ")
-
-  skins SkinCS[]
-
-  @@index([name])
-  @@map("qualityCS")
-}
-
-model RarityCS {
-  id        String @id @default(cuid())
-  name      String @unique
-  ruName    String @unique
-  groupName String @default("Раритетность")
-
-  skins SkinCS[]
-
-  @@index([name])
-  @@map("rarityCS")
-}
-
-model TypeCS {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Модель")
-
-  categoryId String
-  category   CategoryCS @relation(fields: [categoryId], references: [id])
-
-  skins SkinCS[]
-
-  previewSkinId String? @unique
-  previewSkin   SkinCS? @relation(name: "ItemTypeToPreviewSkin", fields: [previewSkinId], references: [id])
-
-  @@index([name])
-  @@map("typeCS")
-}
-
-model PhaseCS {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Фаза")
-
-  skins SkinCS[]
-
-  @@index([name])
-  @@map("phaseCS")
-}
-
-
-model HeroDOTA {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  skins     SkinDOTA[]
-  groupName String     @default("Герой")
-
-  @@index([name])
-  @@map("heroDOTA")
-}
-
-model SlotDOTA {
-  id        String @id @default(cuid())
-  name      String @unique
-  ruName    String @unique
-  groupName String @default("Слот")
-
-  skins SkinDOTA[]
-
-  @@index([name])
-  @@map("slotDOTA")
-}
-
-model TypeDOTA {
+model Type {
   id        String @id @default(cuid())
   name      String @unique
   ruName    String @unique
   groupName String @default("Тип")
 
-  skins SkinDOTA[]
+  game   Game?   @relation(fields: [gameId], references: [id])
+  gameId String?
+
+  skins Skin[]
 
   @@index([name])
-  @@map("typeDOTA")
+  @@map("type")
 }
 
-model RarityDOTA {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Раритетность")
-
-  skins SkinDOTA[]
-
-  @@index([name])
-  @@map("rarityDOTA")
-}
-
-model QualityDOTA {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Качество")
-
-  skins SkinDOTA[]
-
-  @@index([name])
-  @@map("qualityDOTA")
-}
-
-
-
-model TypeRUST {
+model Rarity {
   id        String @id @default(cuid())
   name      String @unique
   ruName    String @unique
-  groupName String @default("Тип")
+  groupName String @default("Раритетность")
 
-  skins SkinRUST[]
+  game   Game?   @relation(fields: [gameId], references: [id])
+  gameId String?
 
-  @@index([name])
-  @@map("typeRUST")
-}
-
-model WeeklyProducts {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Игра")
-
-  skinsCS   WeeklyProductsCS[]
-  skinsDOTA WeeklyProductsDOTA[]
-  skinsRUST WeeklyProductsRUST[]
+  skins Skin[]
 
   @@index([name])
-  @@map("WeeklyProducts")
-}
-
-model WeeklyProductsCS {
-  id String @id @default(cuid())
-
-  weeklyProductId String
-  weeklyProduct   WeeklyProducts @relation(fields: [weeklyProductId], references: [id])
-
-  skinId String
-  skin   SkinCS @relation(fields: [skinId], references: [id])
-
-  @@map("weeklyProductsCS")
-}
-
-model WeeklyProductsDOTA {
-  id String @id @default(cuid())
-
-  weeklyProductId String
-  weeklyProduct   WeeklyProducts @relation(fields: [weeklyProductId], references: [id])
-
-  skinId String
-  skin   SkinDOTA @relation(fields: [skinId], references: [id])
-
-  @@map("weeklyProductsDOTA")
-}
-
-model WeeklyProductsRUST {
-  id String @id @default(cuid())
-
-  weeklyProductId String
-  weeklyProduct   WeeklyProducts @relation(fields: [weeklyProductId], references: [id])
-
-  skinId String
-  skin   SkinRUST @relation(fields: [skinId], references: [id])
-
-  @@map("weeklyProductsRUST")
-}
-
-model LastBuy {
-  id        String @id @default(cuid())
-  name      String @unique
-  groupName String @default("Игра")
-
-  skinsCS   LastBuyCS[]
-  skinsDOTA LastBuyDOTA[]
-  skinsRUST LastBuyRUST[]
-
-  @@index([name])
-  @@map("LastBuy")
-}
-
-model LastBuyCS {
-  id String @id @default(cuid())
-
-  lastBuyId String
-  lastBuy   LastBuy @relation(fields: [lastBuyId], references: [id])
-
-  skinId String
-  skin   SkinCS @relation(fields: [skinId], references: [id])
-
-  @@map("lastBuyCS")
-}
-
-model LastBuyDOTA {
-  id String @id @default(cuid())
-
-  lastBuyId String
-  lastBuy   LastBuy @relation(fields: [lastBuyId], references: [id])
-
-  skinId String
-  skin   SkinDOTA @relation(fields: [skinId], references: [id])
-
-  @@map("lastBuyDOTA")
-}
-
-model LastBuyRUST {
-  id String @id @default(cuid())
-
-  lastBuyId String
-  lastBuy   LastBuy @relation(fields: [lastBuyId], references: [id])
-
-  skinId String
-  skin   SkinRUST @relation(fields: [skinId], references: [id])
-
-  @@map("lastBuyRUST")
+  @@map("rarity")
 }

@@ -1,4 +1,4 @@
-import { SkinCS, SkinDOTA, SkinRUST } from "@prisma/client"
+import { Skin } from "@prisma/client"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
@@ -12,9 +12,8 @@ class SkinsProcedure extends Procedure {
     static paramsSchema = {
         type: "object",
         additionalProperties: false,
-        required: ["game", "slug"],
+        required: ["slug"],
         properties: {
-            game: { type: "string" },
             slug: { type: "string" },
         },
     }
@@ -47,6 +46,11 @@ class SkinsProcedure extends Procedure {
                 nullable: true,
                 additionalProperties: true,
             },
+            rarity: {
+                type: "object",
+                nullable: true,
+                additionalProperties: true,
+            },
 
             // --- CS-специфично ---
             category: {
@@ -54,16 +58,17 @@ class SkinsProcedure extends Procedure {
                 nullable: true,
                 additionalProperties: true,
             },
-            quality: {
+            exterior: {
                 type: "object",
                 nullable: true,
                 additionalProperties: true,
             },
-            rarity: {
+            model: {
                 type: "object",
                 nullable: true,
                 additionalProperties: true,
             },
+
             phase: {
                 type: "object",
                 nullable: true,
@@ -86,6 +91,11 @@ class SkinsProcedure extends Procedure {
                 nullable: true,
                 additionalProperties: true,
             },
+            quality: {
+                type: "object",
+                nullable: true,
+                additionalProperties: true,
+            },
             slot: {
                 type: "object",
                 nullable: true,
@@ -94,13 +104,11 @@ class SkinsProcedure extends Procedure {
         },
     }
 
-    async execute(params: { game: string; slug: string }): Promise<SkinCS | SkinDOTA | SkinRUST> {
-        const { slug, game } = params
+    async execute(params: { slug: string }): Promise<Skin> {
+        const { slug } = params
 
-        let skin
-        if (game === "cs2") skin = await this.services.skins.getSkinCsBySlug(slug)
-        if (game === "dota2") skin = await this.services.skins.getSkinDotaBySlug(slug)
-        if (game === "rust") skin = await this.services.skins.getSkinRustBySlug(slug)
+        const skin = await this.services.skins.getSkin(slug)
+
         if (!skin) throw new Error("Скин не найден")
 
         return skin

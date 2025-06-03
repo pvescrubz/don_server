@@ -1,4 +1,4 @@
-import { TFiltersCs } from "../../services/filters/filters.type"
+import { IFiltersCS } from "../../services/filters/filters.type"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
@@ -20,8 +20,8 @@ class FiltersProcedure extends Procedure {
         additionalProperties: true,
     }
 
-    async execute(): Promise<TFiltersCs> {
-        return this.services.filters.getCSFilters()
+    async execute(): Promise<IFiltersCS> {
+        return this.services.filters.getFiltersCS()
     }
 }
 

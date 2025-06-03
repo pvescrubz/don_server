@@ -4,105 +4,57 @@ import { prisma } from "../../prismaClient"
 export class LastBuyService {
     async init() {
         await this.updateLastBuy()
-        cron.schedule("*/7 * * * *", async () => {
+        cron.schedule("0 3 * * 0", async () => {
             await this.updateLastBuy()
         })
     }
 
     private async updateLastBuy() {
-        const [csProduct, dotaProduct, rustProduct] = await Promise.all([
-            this.getOrCreateLastBuy("cs2"),
-            this.getOrCreateLastBuy("dota2"),
-            this.getOrCreateLastBuy("rust"),
+        await prisma.lastBuy.deleteMany()
+
+        const [csSkins, dotaSkins, rustSkins] = await Promise.all([
+            this.getRandomSkinsByGame("cs2", 7),
+            this.getRandomSkinsByGame("dota2", 7),
+            this.getRandomSkinsByGame("rust", 7),
         ])
 
-        await Promise.all([
-            prisma.lastBuyCS.deleteMany({ where: { lastBuyId: csProduct.id } }),
-            prisma.lastBuyDOTA.deleteMany({ where: { lastBuyId: dotaProduct.id } }),
-            prisma.lastBuyRUST.deleteMany({ where: { lastBuyId: rustProduct.id } }),
-        ])
-
-        await Promise.all([
-            this.addRandomSkinsToLastBuyCS(csProduct.id),
-            this.addRandomSkinsToLastBuyDOTA(dotaProduct.id),
-            this.addRandomSkinsToLastBuyRUST(rustProduct.id),
-        ])
-
-    }
-
-    private async getOrCreateLastBuy(name: string) {
-        return prisma.lastBuy.upsert({
-            where: { name },
-            create: { name },
-            update: {},
-        })
-    }
-
-    private async addRandomSkinsToLastBuyCS(lastBuyId: string) {
-        const skins = await prisma.skinCS.findMany({
-            where: {
-                price: {
-                    gte: 100,
-                    lte: 6000,
-                },
-            },
-            orderBy: { id: "asc" },
-            take: 100,
-        })
-
-        const selected = this.pickRandom(skins, 7)
-        await prisma.lastBuyCS.createMany({
-            data: selected.map(skin => ({
-                lastBuyId,
+        const selectedSkins = [...csSkins, ...dotaSkins, ...rustSkins]
+        await prisma.lastBuy.createMany({
+            data: selectedSkins.map(skin => ({
                 skinId: skin.id,
             })),
         })
     }
 
-    private async addRandomSkinsToLastBuyDOTA(lastBuyId: string) {
-        const skins = await prisma.skinDOTA.findMany({
+    private async getRandomSkinsByGame(gameName: string, count: number) {
+        const game = await prisma.game.findFirst({
+            where: { name: gameName },
+            select: { id: true },
+        })
+
+        if (!game) {
+            throw new Error(`Game ${gameName} not found`)
+        }
+
+        const skins = await prisma.skin.findMany({
             where: {
+                gameId: game.id,
                 price: {
-                    gte: 100,
-                    lte: 6000,
+                    gte: 0,
+                    lte: 8000,
                 },
             },
-            orderBy: { id: "asc" },
             take: 100,
-        })
-
-        const selected = this.pickRandom(skins, 7)
-        await prisma.lastBuyDOTA.createMany({
-            data: selected.map(skin => ({
-                lastBuyId,
-                skinId: skin.id,
-            })),
-        })
-    }
-
-    private async addRandomSkinsToLastBuyRUST(lastBuyId: string) {
-        const skins = await prisma.skinRUST.findMany({
-            where: {
-                price: {
-                    gte: 100,
-                    lte: 6000,
-                },
+            orderBy: {
+                id: "asc",
             },
-            orderBy: { id: "asc" },
-            take: 100,
         })
 
-        const selected = this.pickRandom(skins, 7)
-        await prisma.lastBuyRUST.createMany({
-            data: selected.map(skin => ({
-                lastBuyId,
-                skinId: skin.id,
-            })),
-        })
+        return this.pickRandom(skins, count)
     }
 
     private pickRandom<T>(arr: T[], count: number): T[] {
-        const shuffled = arr.sort(() => 0.5 - Math.random())
+        const shuffled = [...arr].sort(() => 0.5 - Math.random())
         return shuffled.slice(0, count)
     }
 }
