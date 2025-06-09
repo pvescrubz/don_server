@@ -49,6 +49,7 @@ class SkinsProcedure extends Procedure {
     }
 
     async execute(): Promise<Skin[]> {
+
         return this.services.skins.getLastBuy()
     }
 }
