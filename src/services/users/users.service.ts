@@ -26,16 +26,17 @@ class UsersService {
     }
 
     async createWithSteam(data: IAuthSteamData): Promise<User> {
-        const { name, picture: avatarPath, system, steamId } = data
-        // const cart = await prisma.cart.create({ data: {} })
+        const { name, picture: avatarPath, steamId } = data
 
-        return await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
-                // cart: { connect: { id: cart.id } },
                 steamId,
                 ...(name && { name }),
             },
         })
+        await prisma.cart.create({ data: { userId: user.id } })
+
+        return user
     }
 
     async getByEmail(email: string) {

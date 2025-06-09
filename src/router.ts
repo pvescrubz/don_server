@@ -27,7 +27,8 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
 
         app.route({
             method,
-            url: `/api/${path}/${title}`,
+            // url: `/api/${path}/${title}`,
+            url: `/api/${path}${title ? `/${title}` : ""}`,
             ...(auth.length && { preValidation: app.auth(auth) }),
             schema: {
                 ...(method === API_METHODS.GET

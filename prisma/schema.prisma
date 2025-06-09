@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -24,14 +30,22 @@ model User {
   balance Float @default(0)
 
   roles Role[] @default([USER])
+  Cart  Cart?
 
   @@map("users")
 }
 
-enum Role {
-  USER
-  ADMIN
-  SUPER_ADMIN
+model Cart {
+  id          String  @id @default(cuid())
+  totalAmount Decimal @default(0) @db.Decimal(12, 2)
+  itemsCount  Int     @default(0)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  skins Skin[] @relation("CartSkins")
+
+  @@map("cart")
 }
 
 model Skin {
@@ -87,6 +101,7 @@ model Skin {
 
   weeklyProducts WeeklyProducts[] @relation("SkinToWeekly")
   lastBuy        LastBuy[]        @relation("SkinToLastBuy")
+  carts          Cart[]           @relation("CartSkins")
 
   @@index([slug])
   @@index([gameId])
@@ -102,26 +117,6 @@ model Skin {
   @@index([slotId])
   @@index([qualityId])
   @@map("skins")
-}
-
-model WeeklyProducts {
-  id        String @id @default(cuid())
-  groupName String @default("Товары недели")
-
-  skinId String
-  skin   Skin   @relation(fields: [skinId], references: [id], name: "SkinToWeekly")
-
-  @@map("weeklyProducts")
-}
-
-model LastBuy {
-  id        String @id @default(cuid())
-  groupName String @default("Последние покупки")
-
-  skinId String
-  skin   Skin   @relation(fields: [skinId], references: [id], name: "SkinToLastBuy")
-
-  @@map("lastBuy")
 }
 
 model Category {
@@ -276,4 +271,24 @@ model Rarity {
 
   @@index([name])
   @@map("rarity")
+}
+
+model WeeklyProducts {
+  id        String @id @default(cuid())
+  groupName String @default("Товары недели")
+
+  skinId String
+  skin   Skin   @relation(fields: [skinId], references: [id], name: "SkinToWeekly")
+
+  @@map("weeklyProducts")
+}
+
+model LastBuy {
+  id        String @id @default(cuid())
+  groupName String @default("Последние покупки")
+
+  skinId String
+  skin   Skin   @relation(fields: [skinId], references: [id], name: "SkinToLastBuy")
+
+  @@map("lastBuy")
 }

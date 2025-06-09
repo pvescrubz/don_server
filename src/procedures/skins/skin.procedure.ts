@@ -107,7 +107,7 @@ class SkinsProcedure extends Procedure {
     async execute(params: { slug: string }): Promise<Skin> {
         const { slug } = params
 
-        const skin = await this.services.skins.getSkin(slug)
+        const skin = await this.services.skins.getBySlug(slug)
 
         if (!skin) throw new Error("Скин не найден")
 

@@ -43,7 +43,7 @@ export class SkinsService {
         }
     }
 
-    async getSkin(slug: string): Promise<Skin | null> {
+    async getBySlug(slug: string): Promise<Skin | null> {
         return await prisma.skin.findUnique({
             where: { slug },
             include: {
@@ -60,6 +60,11 @@ export class SkinsService {
                 hero: true,
                 slot: true,
             },
+        })
+    }
+    async getById(id: string): Promise<Skin | null> {
+        return await prisma.skin.findUnique({
+            where: { id },
         })
     }
 

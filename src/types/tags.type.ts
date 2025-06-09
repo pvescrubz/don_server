@@ -3,6 +3,7 @@ export const MAIN_TAGS = {
     USER: "User",
     SKINS: "Skins",
     FILTERS: "Filters",
+    CART: "Cart",
 } as const
 
 export const HELPFUL_TAGS = {

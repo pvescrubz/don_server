@@ -1,3 +1,4 @@
+import CartService from "../services/cart/cart.service"
 import EmailService from "../services/email/email.service"
 import FiltersService from "../services/filters/filters.service"
 import LastBuyService from "../services/lastBuy/lastBuy.service"
@@ -16,4 +17,5 @@ export type TServices = {
     filters: FiltersService
     weeklyProduct: WeeklyProductService
     lastBuy: LastBuyService
+    cart: CartService
 }

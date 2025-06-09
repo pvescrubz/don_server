@@ -5,7 +5,7 @@ import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
 
 class SkinsProcedure extends Procedure {
-    static title = "weekly"
+    static title = "best-this-week"
     static method = API_METHODS.GET
     static tags: TTags = [API_GUARD.PUBLIC, MAIN_TAGS.SKINS]
     static summary = "Получить лучшие предложения недели"
@@ -50,6 +50,7 @@ class SkinsProcedure extends Procedure {
     }
 
     async execute(): Promise<Skin[]> {
+
         return this.services.skins.getWeekly()
     }
 }
