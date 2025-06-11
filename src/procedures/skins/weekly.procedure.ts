@@ -1,4 +1,3 @@
-
 import { Skin } from "@prisma/client"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
@@ -24,7 +23,10 @@ class SkinsProcedure extends Procedure {
             properties: {
                 id: { type: "string" },
                 name: { type: "string" },
-                price: { type: "string" },
+                priceRUB: { type: "string" },
+                priceKZT: { type: "string" },
+                priceUSD: { type: "string" },
+                priceEUR: { type: "string" },
                 imageUrl: { type: "string" },
                 image: { type: "string" },
                 slug: { type: "string" },
@@ -50,7 +52,6 @@ class SkinsProcedure extends Procedure {
     }
 
     async execute(): Promise<Skin[]> {
-
         return this.services.skins.getWeekly()
     }
 }

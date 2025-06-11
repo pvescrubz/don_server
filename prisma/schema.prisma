@@ -13,6 +13,13 @@ enum Role {
   SUPER_ADMIN
 }
 
+enum Currency {
+  RUB
+  KZT
+  USD
+  EUR
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -27,7 +34,8 @@ model User {
   activationToken String?
   isActivated     Boolean @default(false)
 
-  balance Float @default(0)
+  balance          Decimal  @default(0) @db.Decimal(12, 2)
+  selectedCurrency Currency @default(RUB)
 
   roles Role[] @default([USER])
   Cart  Cart?
@@ -36,9 +44,14 @@ model User {
 }
 
 model Cart {
-  id          String  @id @default(cuid())
-  totalAmount Decimal @default(0) @db.Decimal(12, 2)
-  itemsCount  Int     @default(0)
+  id         String  @id @default(cuid())
+
+  totalRUB   Decimal @default(0) @db.Decimal(12, 2)
+  totalUSD   Decimal @default(0) @db.Decimal(12, 2)
+  totalEUR   Decimal @default(0) @db.Decimal(12, 2)
+  totalKZT   Decimal @default(0) @db.Decimal(12, 2)
+
+  itemsCount Int     @default(0)
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique
@@ -49,12 +62,17 @@ model Cart {
 }
 
 model Skin {
-  id       String  @id @default(cuid())
+  id       String   @id @default(cuid())
   name     String
-  price    Decimal @db.Decimal(12, 2)
+  
+  priceRUB Decimal @db.Decimal(12, 2)
+  priceUSD Decimal @db.Decimal(12, 2)
+  priceEUR Decimal @db.Decimal(12, 2)
+  priceKZT Decimal @db.Decimal(12, 2)
+
   imageUrl String
   image    String
-  slug     String  @unique
+  slug     String @unique
 
   description Json?
 

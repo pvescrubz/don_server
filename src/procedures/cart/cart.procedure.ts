@@ -20,7 +20,10 @@ class SkinsProcedure extends Procedure {
         additionalProperties: false,
         properties: {
             id: { type: "string" },
-            totalAmount: { type: "string" },
+            totalRUB: { type: "string" },
+            totalKZT: { type: "string" },
+            totalUSD: { type: "string" },
+            totalEUR: { type: "string" },
             itemsCount: { type: "integer" },
             skins: {
                 type: "array",
@@ -30,7 +33,10 @@ class SkinsProcedure extends Procedure {
                     properties: {
                         id: { type: "string" },
                         name: { type: "string" },
-                        price: { type: "string" },
+                        priceRUB: { type: "string" },
+                        priceKZT: { type: "string" },
+                        priceUSD: { type: "string" },
+                        priceEUR: { type: "string" },
                         image: { type: "string" },
                         slug: { type: "string" },
                         game: {

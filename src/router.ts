@@ -27,7 +27,6 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
 
         app.route({
             method,
-            // url: `/api/${path}/${title}`,
             url: `/api/${path}${title ? `/${title}` : ""}`,
             ...(auth.length && { preValidation: app.auth(auth) }),
             schema: {
@@ -54,9 +53,12 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
                         ...(request.params as Record<string, any>),
                     }
 
+                    const { currency } = request.cookies
+
                     const user: TJwtVerifyObject = request.user as TJwtVerifyObject
 
                     ;(params as any).user = user
+                    if (currency) (params as any).currency = currency
 
                     const result = await procInstance.exec(params)
 

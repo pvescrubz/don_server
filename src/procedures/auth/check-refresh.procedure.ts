@@ -25,6 +25,7 @@ class CheckRefreshProcedure extends Procedure {
             name: { type: "string" },
             avatarPath: { type: "string" },
             isActivated: { type: "boolean" },
+            selectedCurrency: { type: "string" },
         },
     }
 

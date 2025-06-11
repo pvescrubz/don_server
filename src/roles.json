@@ -8,10 +8,11 @@
             "user:activate",
             "user:send-activate-email",
             "user:send-activate-email",
+            "cart:undefined",
             "cart:add",
             "cart:remove",
             "cart:clear",
-            "cart:undefined"
+            "cart:change-currency"
         ]
     }
 ]
