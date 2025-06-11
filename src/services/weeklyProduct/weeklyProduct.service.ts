@@ -39,7 +39,7 @@ export class WeeklyProductService {
         const skins = await prisma.skin.findMany({
             where: {
                 gameId: game.id,
-                price: {
+                priceRUB: {
                     gte: 500,
                     lte: 3500,
                 },

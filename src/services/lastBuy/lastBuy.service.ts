@@ -39,7 +39,7 @@ export class LastBuyService {
         const skins = await prisma.skin.findMany({
             where: {
                 gameId: game.id,
-                price: {
+                priceRUB: {
                     gte: 0,
                     lte: 8000,
                 },

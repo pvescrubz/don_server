@@ -14,7 +14,7 @@ export class SkinsService {
 
         const orderBy =
             sort === SORT_OPTIONS.LOW_TO_HIGH.name || sort === SORT_OPTIONS.HIGH_TO_LOW.name
-                ? { price: sort }
+                ? { priceRUB: sort }
                 : {}
 
         const [items, totalCount] = await Promise.all([
@@ -105,7 +105,7 @@ export class SkinsService {
     private buildWhereClause(params: Record<string, string | undefined>): Record<string, any> {
         const where: Record<string, any> = {}
 
-        const { priceFrom, priceTo, search, ...filters } = params
+        const { priceFrom, priceTo, currency, search, ...filters } = params
 
         if (search?.trim()) {
             where.name = {
@@ -115,7 +115,7 @@ export class SkinsService {
         }
 
         this.applyGeneralFilters(where, filters)
-        this.applyPriceFilter(where, priceFrom, priceTo)
+        this.applyPriceFilter(where, priceFrom, priceTo, currency)
 
         return where
     }
@@ -135,14 +135,19 @@ export class SkinsService {
         }
     }
 
-    private applyPriceFilter(where: Record<string, any>, priceFrom?: string, priceTo?: string) {
+    private applyPriceFilter(
+        where: Record<string, any>,
+        priceFrom?: string,
+        priceTo?: string,
+        currency = "RUB"
+    ) {
         const from = this.parsePrice(priceFrom)
         const to = this.parsePrice(priceTo)
 
         if (from !== null || to !== null) {
-            where.price = {}
-            if (from !== null) where.price.gte = from
-            if (to !== null) where.price.lte = to
+            where[`price${currency}`] = {}
+            if (from !== null) where[`price${currency}`].gte = from
+            if (to !== null) where[`price${currency}`].lte = to
         }
     }
 
