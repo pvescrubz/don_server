@@ -9,6 +9,7 @@ import router from "./router"
 import EmailService from "./services/email/email.service"
 // import FiltersService from "./services/filters/filters.service"
 import CartService from "./services/cart/cart.service"
+import CurrencyService from "./services/currency/currency.service"
 import FiltersService from "./services/filters/filters.service"
 import LastBuyService from "./services/lastBuy/lastBuy.service"
 import PassportService from "./services/passport/passport.service"
@@ -42,6 +43,7 @@ export default async (config: IConfig) => {
         cart: new CartService({ log: app.log }),
         weeklyProduct: new WeeklyProductService(),
         lastBuy: new LastBuyService(),
+        currency: new CurrencyService(),
     }
 
     const procedures = getProcedures()
@@ -51,7 +53,11 @@ export default async (config: IConfig) => {
         services,
     })
 
-    await Promise.all([services.weeklyProduct.init(), services.lastBuy.init()])
+    await Promise.all([
+        services.currency.init(),
+        services.weeklyProduct.init(),
+        services.lastBuy.init(),
+    ])
 
     return app
 }

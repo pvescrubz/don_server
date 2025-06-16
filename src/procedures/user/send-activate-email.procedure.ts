@@ -12,35 +12,29 @@ class ActivateEmailProcedure extends Procedure {
     static paramsSchema = {
         type: "object",
         additionalProperties: false,
-        properties: {
-            email: {
-                type: "string",
-                format: "email",
-                errorMessage: "Email введен не корректно",
-            },
-        },
+        properties: {},
     }
 
     static resultSchema = {
         type: "object",
         additionalProperties: false,
-        properties: {},
+        properties: {
+            success: { type: "boolean" },
+        },
     }
 
-    async execute(params: { email: string }, user: TJwtVerifyObject) {
+    async execute(_: unknown, user: TJwtVerifyObject): Promise<{ success: boolean }> {
         const { userId } = user
 
         const dbUser = await this.services.users.getById(userId)
-        if (!dbUser) return null
+        if (!dbUser || !dbUser.email) throw new Error("Ошибка при отправке пиьсма активации")
 
         const newToken = this.services.tokens.generateActivationToken({
             userId,
+            email: dbUser.email,
         })
 
-        const updatedUser = await this.services.users.update(
-            { activationToken: newToken, email: params.email },
-            userId
-        )
+        const updatedUser = await this.services.users.update({ activationToken: newToken }, userId)
         const { activationToken, email, name } = updatedUser
 
         if (!activationToken || !email) {
@@ -48,6 +42,7 @@ class ActivateEmailProcedure extends Procedure {
         }
 
         await this.services.email.sendActivateEmail(activationToken, email, name)
+        return { success: true }
     }
 }
 

@@ -26,12 +26,33 @@ class UsersService {
     }
 
     async createWithSteam(data: IAuthSteamData): Promise<User> {
-        const { name, picture: avatarPath, steamId } = data
+        const { name, steamAvatar, steamId, ref } = data
+
+        let referredById: string | undefined
+
+        if (ref) {
+            const referrer = await prisma.user.findUnique({
+                where: { ref },
+                select: { id: true },
+            })
+            if (referrer) {
+                referredById = referrer.id
+            }
+        }
 
         const user = await prisma.user.create({
             data: {
                 steamId,
                 ...(name && { name }),
+                ...(steamAvatar && { steamAvatar }),
+                ...(referredById && { referredById }),
+            },
+            include: {
+                _count: {
+                    select: {
+                        referrals: true,
+                    },
+                },
             },
         })
         await prisma.cart.create({ data: { userId: user.id } })
@@ -39,33 +60,59 @@ class UsersService {
         return user
     }
 
-    async getByEmail(email: string) {
+    async getByEmail(email: string): Promise<User | null> {
         return await prisma.user.findUnique({
             where: {
                 email,
             },
+            include: {
+                _count: {
+                    select: {
+                        referrals: true,
+                    },
+                },
+            },
         })
     }
-    async getBySteamId(steamId: string) {
+    async getBySteamId(steamId: string): Promise<User | null> {
         return await prisma.user.findUnique({
             where: {
                 steamId,
             },
-        })
-    }
-
-    async getById(id: string) {
-        return prisma.user.findUnique({
-            where: {
-                id,
+            include: {
+                _count: {
+                    select: {
+                        referrals: true,
+                    },
+                },
             },
         })
     }
 
-    async update(data: Partial<User>, id: string) {
+    async getById(id: string): Promise<(User & { _count: { referrals: number } }) | null> {
+        return prisma.user.findUnique({
+            where: { id },
+            include: {
+                _count: {
+                    select: {
+                        referrals: true,
+                    },
+                },
+            },
+        })
+    }
+
+    async update(data: Partial<User>, id: string): Promise<User> {
         return prisma.user.update({
             where: {
                 id,
+            },
+            include: {
+                _count: {
+                    select: {
+                        referrals: true,
+                    },
+                },
             },
             data,
         })

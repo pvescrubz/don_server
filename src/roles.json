@@ -5,9 +5,13 @@
             "auth:logout",
             "auth:check-access",
             "auth:check-refresh",
+
+
+            "user:update",
             "user:activate",
             "user:send-activate-email",
             "user:send-activate-email",
+
             "cart:undefined",
             "cart:add",
             "cart:remove",

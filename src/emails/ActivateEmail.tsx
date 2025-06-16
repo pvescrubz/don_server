@@ -22,7 +22,7 @@ interface IActivateEmail {
 export const ActivateEmail = ({ token, companyName, username, frontUrl }: IActivateEmail) => {
     const previewText = `Активация аккаунта ${companyName}`
 
-    const link = `${frontUrl}/activate?token=${token}`
+    const link = `${frontUrl}/activate/${token}`
 
     return (
         <Html>

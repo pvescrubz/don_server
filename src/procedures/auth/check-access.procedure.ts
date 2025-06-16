@@ -1,4 +1,5 @@
 import { User } from "@prisma/client"
+import { USER_SCHEME } from "../../schemes/user.scheme"
 import { TJwtVerifyObject } from "../../services/tokens/tokens.type"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, HELPFUL_TAGS, MAIN_TAGS, TTags } from "../../types/tags.type"
@@ -19,20 +20,13 @@ class ChechAccessProcedure extends Procedure {
     static resultSchema = {
         type: "object",
         additionalProperties: false,
-        properties: {
-            id: { type: "string" },
-            email: { type: "string" },
-            name: { type: "string" },
-            avatarPath: { type: "string" },
-            isActivated: { type: "boolean" },
-            selectedCurrency: { type: "string" },
-        },
+        properties: USER_SCHEME,
     }
 
     async execute(_: any, user: TJwtVerifyObject): Promise<User | null> {
         const dsUser = await this.services.users.getById(user.userId)
         if (!dsUser) return null
-
+        
         return dsUser
     }
 }
