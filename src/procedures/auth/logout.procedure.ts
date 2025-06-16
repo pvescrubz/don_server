@@ -1,4 +1,3 @@
-import { IAuthData } from "../../services/users/users.type"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, HELPFUL_TAGS, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
@@ -21,7 +20,7 @@ class LoginProcedure extends Procedure {
         properties: {},
     }
 
-    async execute(params: IAuthData): Promise<null> {
+    async execute(_: unknown): Promise<null> {
         return null
     }
 }

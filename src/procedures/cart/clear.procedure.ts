@@ -1,3 +1,4 @@
+import { CART_SCHEME } from "../../schemes/cart.scheme"
 import { ICart } from "../../services/cart/cart.type"
 import { TJwtVerifyObject } from "../../services/tokens/tokens.type"
 import { API_METHODS } from "../../types/api-methods.type"
@@ -19,38 +20,7 @@ class SkinsProcedure extends Procedure {
     static resultSchema = {
         type: "object",
         additionalProperties: false,
-        properties: {
-            id: { type: "string" },
-            totalRUB: { type: "string" },
-            totalKZT: { type: "string" },
-            totalUSD: { type: "string" },
-            totalEUR: { type: "string" },
-            itemsCount: { type: "integer" },
-            skins: {
-                type: "array",
-                items: {
-                    type: "object",
-                    additionalProperties: false,
-                    properties: {
-                        id: { type: "string" },
-                        name: { type: "string" },
-                        priceRUB: { type: "string" },
-                        priceKZT: { type: "string" },
-                        priceUSD: { type: "string" },
-                        priceEUR: { type: "string" },
-                        image: { type: "string" },
-                        slug: { type: "string" },
-                        game: {
-                            type: "object",
-                            additionalProperties: false,
-                            properties: {
-                                name: { type: "string" },
-                            },
-                        },
-                    },
-                },
-            },
-        },
+        properties: CART_SCHEME,
     }
 
     async execute(_: unknown, user: TJwtVerifyObject): Promise<ICart> {

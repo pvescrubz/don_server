@@ -1,4 +1,5 @@
-import { Currency, User } from "@prisma/client"
+import { CurrencyKey, User } from "@prisma/client"
+import { USER_SCHEME } from "../../schemes/user.scheme"
 import { TJwtVerifyObject } from "../../services/tokens/tokens.type"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
@@ -19,14 +20,7 @@ class SkinsProcedure extends Procedure {
     static resultSchema = {
         type: "object",
         additionalProperties: false,
-        properties: {
-            id: { type: "string" },
-            email: { type: "string" },
-            name: { type: "string" },
-            avatarPath: { type: "string" },
-            isActivated: { type: "boolean" },
-            selectedCurrency: { type: "string" },
-        },
+        properties: USER_SCHEME,
     }
 
     async execute(params: { currency: string }, user: TJwtVerifyObject): Promise<User> {
@@ -39,7 +33,7 @@ class SkinsProcedure extends Procedure {
         if (!dbUser) throw new Error("Пользователь не найден")
 
         const updatedUser = await this.services.users.update(
-            { selectedCurrency: currency as Currency },
+            { selectedCurrency: currency as CurrencyKey },
             userId
         )
 

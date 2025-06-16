@@ -48,17 +48,18 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
                 try {
                     const params = {
                         ...(method === API_METHODS.GET
-                            ? (request.query as Record<string, any>)
-                            : (request.body as Record<string, any>)),
-                        ...(request.params as Record<string, any>),
+                            ? (request.query as Record<string, unknown>)
+                            : (request.body as Record<string, unknown>)),
+                        ...(request.params as Record<string, unknown>),
                     }
 
-                    const { currency } = request.cookies
+                    const { currency, ref } = request.cookies
 
                     const user: TJwtVerifyObject = request.user as TJwtVerifyObject
 
-                    ;(params as any).user = user
-                    if (currency) (params as any).currency = currency
+                    params.user = user
+                    if (currency) params.currency = currency
+                    if (ref) params.ref = ref
 
                     const result = await procInstance.exec(params)
 
@@ -66,7 +67,8 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
 
                     if (tags.includes(HELPFUL_TAGS.PASSPORT_CALLBACK)) {
                         await reply.redirect(
-                            process.env.FRONT_URL + "/i" || "http://localhost:3000" + "/i"
+                            `${process.env.FRONT_URL}/i/balance` ||
+                                "http://localhost:3000/i/balance"
                         )
                     }
 

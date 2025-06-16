@@ -1,4 +1,5 @@
 import { User } from "@prisma/client"
+import { USER_SCHEME } from "../../schemes/user.scheme"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, HELPFUL_TAGS, MAIN_TAGS, TTags } from "../../types/tags.type"
 import Procedure from "../procedure"
@@ -22,22 +23,38 @@ class LoginProcedure extends Procedure {
     }
 
     static resultSchema = {
-        type: "null",
+        type: "object",
         additionalProperties: false,
-        properties: {},
+        properties: USER_SCHEME,
     }
 
-    async execute(_: any, user: any): Promise<User> {
-        const { personaname, avatar, steamid } = user._json
+    async execute(params: { ref?: string }, user: any): Promise<User> {
+        const { personaname, avatarfull, steamid } = user._json
 
         const candidate = await this.services.users.getBySteamId(steamid)
-        if (candidate) return candidate
 
-        return await this.services.users.createWithSteam({
-            name: personaname,
-            picture: avatar,
-            steamId: steamid,
-        })
+        if (!candidate) {
+            const { ref } = params
+
+            return await this.services.users.createWithSteam({
+                name: personaname,
+                steamAvatar: avatarfull,
+                steamId: steamid,
+                ref,
+            })
+        }
+
+        if (candidate?.steamAvatar !== avatarfull || candidate?.name !== personaname) {
+            return await this.services.users.update(
+                {
+                    name: personaname,
+                    steamAvatar: avatarfull,
+                },
+                candidate?.id
+            )
+        }
+
+        return candidate
     }
 }
 

@@ -59,18 +59,10 @@ class CartService {
             data: {
                 skins: { connect: { id: skin.id } },
                 itemsCount: { increment: 1 },
-                totalRUB: {
-                    increment: Number(skin.priceRUB),
+                total: {
+                    increment: Number(skin.price),
                 },
-                totalKZT: {
-                    increment: Number(skin.priceKZT),
-                },
-                totalUSD: {
-                    increment: Number(skin.priceUSD),
-                },
-                totalEUR: {
-                    increment: Number(skin.priceEUR),
-                },
+
             },
         })
     }
@@ -94,18 +86,10 @@ class CartService {
                 itemsCount: {
                     decrement: 1,
                 },
-                totalRUB: {
-                    decrement: Number(skin.priceRUB),
+                total: {
+                    decrement: Number(skin.price),
                 },
-                totalKZT: {
-                    decrement: Number(skin.priceKZT),
-                },
-                totalUSD: {
-                    decrement: Number(skin.priceUSD),
-                },
-                totalEUR: {
-                    decrement: Number(skin.priceEUR),
-                },
+
             },
         })
     }
@@ -121,10 +105,8 @@ class CartService {
                     set: [],
                 },
                 itemsCount: 0,
-                totalRUB: 0,
-                totalKZT: 0,
-                totalUSD: 0,
-                totalEUR: 0,
+                total: 0,
+
             },
         })
     }

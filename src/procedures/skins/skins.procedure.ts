@@ -1,3 +1,4 @@
+import { GET_SKINS_PARAMS_SCHEME, GET_SKINS_RESULT_SCHEME } from "../../schemes/get-skins.scheme"
 import { TSkinsRes } from "../../services/skins/skins.type"
 import { API_METHODS } from "../../types/api-methods.type"
 import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
@@ -13,86 +14,13 @@ class SkinsProcedure extends Procedure {
         type: "object",
         additionalProperties: false,
         required: ["game"],
-        properties: {
-            game: { type: "string" },
-            // global
-            rarity: { type: "string" },
-            type: { type: "string" },
-            search: { type: "string" },
-
-            // cs2
-            category: { type: "string" },
-            exterior: { type: "string" },
-            model: { type: "string" },
-            phase: { type: "string" },
-            killCounter: { type: "string" },
-            souvenir: { type: "string" },
-
-            // dota2
-            quality: { type: "string" },
-            hero: { type: "string" },
-            slot: { type: "string" },
-
-            // sort
-            priceFrom: { type: "integer", minimum: 0 },
-            priceTo: { type: "integer", minimum: 0 },
-            sort: {
-                type: "string",
-            },
-            page: { type: "integer", minimum: 1, default: 1 },
-            perPage: { type: "integer", minimum: 1, default: 48 },
-        },
+        properties: GET_SKINS_PARAMS_SCHEME,
     }
 
     static resultSchema = {
         type: "object",
         additionalProperties: false,
-        properties: {
-            data: {
-                type: "array",
-                items: {
-                    type: "object",
-                    additionalProperties: false,
-                    properties: {
-                        id: { type: "string" },
-                        name: { type: "string" },
-                        priceRUB: { type: "string" },
-                        priceKZT: { type: "string" },
-                        priceUSD: { type: "string" },
-                        priceEUR: { type: "string" },
-                        imageUrl: { type: "string" },
-                        image: { type: "string" },
-                        slug: { type: "string" },
-                        game: {
-                            type: "object",
-                            additionalProperties: false,
-                            properties: {
-                                name: { type: "string" },
-                            },
-                        },
-
-                        //cs
-                        killCounter: {
-                            type: "object",
-                            additionalProperties: true,
-                        },
-                        souvenir: {
-                            type: "object",
-                            additionalProperties: true,
-                        },
-                    },
-                },
-            },
-            meta: {
-                type: "object",
-                properties: {
-                    currentPage: { type: "integer" },
-                    totalPages: { type: "integer" },
-                    totalItems: { type: "integer" },
-                    itemsPerPage: { type: "integer" },
-                },
-            },
-        },
+        properties: GET_SKINS_RESULT_SCHEME,
     }
 
     async execute(params: Record<string, string>): Promise<TSkinsRes> {

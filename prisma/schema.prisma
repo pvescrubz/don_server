@@ -13,7 +13,7 @@ enum Role {
   SUPER_ADMIN
 }
 
-enum Currency {
+enum CurrencyKey {
   RUB
   KZT
   USD
@@ -30,12 +30,19 @@ model User {
 
   steamId       String  @unique
   steamTradeUrl String? @unique
+  steamAvatar   String?
 
+  activatedEmail  String?
   activationToken String?
-  isActivated     Boolean @default(false)
 
-  balance          Decimal  @default(0) @db.Decimal(12, 2)
-  selectedCurrency Currency @default(RUB)
+  balance Decimal @default(0) @db.Decimal(12, 2)
+
+  selectedCurrency CurrencyKey @default(RUB)
+
+  ref          String  @unique @default(cuid())
+  referredBy   User?   @relation("Referrals", fields: [referredById], references: [id])
+  referredById String?
+  referrals    User[]  @relation("Referrals")
 
   roles Role[] @default([USER])
   Cart  Cart?
@@ -43,15 +50,24 @@ model User {
   @@map("users")
 }
 
+model Currency {
+  id     String  @id @default(cuid())
+  isMain Boolean @unique @default(true)
+  
+  RUB    Decimal @default(1) @db.Decimal(12, 2)
+  USD    Decimal @default(80.5) @db.Decimal(12, 2)
+  EUR    Decimal @default(92) @db.Decimal(12, 2)
+  KZT    Decimal @default(7) @db.Decimal(12, 2)
+
+  @@map("currency")
+}
+
 model Cart {
-  id         String  @id @default(cuid())
+  id String @id @default(cuid())
 
-  totalRUB   Decimal @default(0) @db.Decimal(12, 2)
-  totalUSD   Decimal @default(0) @db.Decimal(12, 2)
-  totalEUR   Decimal @default(0) @db.Decimal(12, 2)
-  totalKZT   Decimal @default(0) @db.Decimal(12, 2)
+  total Decimal @default(0) @db.Decimal(12, 2)
 
-  itemsCount Int     @default(0)
+  itemsCount Int @default(0)
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique
@@ -62,13 +78,10 @@ model Cart {
 }
 
 model Skin {
-  id       String   @id @default(cuid())
-  name     String
-  
-  priceRUB Decimal @db.Decimal(12, 2)
-  priceUSD Decimal @db.Decimal(12, 2)
-  priceEUR Decimal @db.Decimal(12, 2)
-  priceKZT Decimal @db.Decimal(12, 2)
+  id   String @id @default(cuid())
+  name String
+
+  price Decimal @db.Decimal(12, 2)
 
   imageUrl String
   image    String

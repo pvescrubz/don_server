@@ -32,11 +32,11 @@ class TokensService {
         }
     }
 
-    sign(payload: object, options?: jwt.SignOptions) {
+    sign(payload: Record<string, string>, options?: jwt.SignOptions) {
         return jwt.sign(payload, this.JWT_SECRET, options)
     }
 
-    generateActivationToken(payload: object): string {
+    generateActivationToken(payload: Record<string, string>): string {
         return this.sign({ ...payload, type: "activation" }, { expiresIn: "15m" })
     }
 
@@ -48,7 +48,7 @@ class TokensService {
         }
     }
 
-    generateAccessToken(payload: object, reply: FastifyReply): void {
+    generateAccessToken(payload: Record<string, string>, reply: FastifyReply): void {
         const accessToken = this.sign(payload, { expiresIn: this.TOKEN_EXPIRATION_ACCESS })
 
         reply.setCookie("accessToken", accessToken, {
@@ -59,7 +59,7 @@ class TokensService {
         })
     }
 
-    generateRefreshToken(payload: object, reply: FastifyReply): void {
+    generateRefreshToken(payload: Record<string, string>, reply: FastifyReply): void {
         const refreshToken = this.sign(payload, { expiresIn: this.TOKEN_EXPIRATION_REFRESH })
 
         reply.setCookie("refreshToken", refreshToken, {
@@ -71,7 +71,7 @@ class TokensService {
         })
     }
 
-    generateTokens(payload: object, reply: FastifyReply): void {
+    generateTokens(payload: Record<string, string>, reply: FastifyReply): void {
         this.generateAccessToken(payload, reply)
         this.generateRefreshToken(payload, reply)
     }
