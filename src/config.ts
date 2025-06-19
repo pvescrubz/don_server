@@ -11,7 +11,15 @@ export interface IConfig {
         steamKey: string
         sessionSecret: string
     }
+    payment: {
+        paymentSiteKey: string
+        paymentApiToken: string
+    }
     email: IEmailConfig
+    notification: {
+        tgApiToken: string
+        tgChat: string
+    }
 }
 
 export default (): IConfig => {
@@ -33,12 +41,20 @@ export default (): IConfig => {
             steamKey: requader("STEAM_CLIENT_SECRET"),
             sessionSecret: requader("SESSION_SECRET"),
         },
+        payment: {
+            paymentSiteKey: requader("PAYMENT_SITE_KEY"),
+            paymentApiToken: requader("PAYMENT_API_TOKEN"),
+        },
         email: {
             host: requader("EMAIL_HOST"),
             port: requader("EMAIL_PORT"),
             user: requader("EMAIL_USER"),
             password: requader("EMAIL_PASSWORD"),
             company: requader("COMPANY_NAME"),
+        },
+        notification: {
+            tgApiToken: requader("TELEGRAM_TOKEN"),
+            tgChat: requader("TELEGRAM_CHAT_ID"),
         },
     }
 }

@@ -7,10 +7,14 @@ import { MAIN_TAGS } from "../types/tags.type"
 const swaggerOptions = {
     openapi: {
         info: {
-            title: "Панель администратора",
+            title: "Don Endppoints",
             version: "1.0.0",
         },
         tags: [
+            {
+                name: MAIN_TAGS.CHECKOUT,
+                description: "Оплата",
+            },
             {
                 name: MAIN_TAGS.CART,
                 description: "Работа с корзиной: добавление, удаление, получение данных и т.д.",
@@ -31,6 +35,14 @@ const swaggerOptions = {
             {
                 name: MAIN_TAGS.FILTERS,
                 description: "Получение доступных значений для фильтров (категории, товары и т.д.)",
+            },
+            {
+                name: MAIN_TAGS.CURRENCY,
+                description: "Получить курсы валют",
+            },
+            {
+                name: MAIN_TAGS.CALLBACK,
+                description: "Колбэки",
             },
         ],
     },

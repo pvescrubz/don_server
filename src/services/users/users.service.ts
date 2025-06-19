@@ -5,7 +5,7 @@ import roles from "../../roles.json"
 import { TRoles } from "../../types/role.type"
 import { IAuthSteamData } from "./users.type"
 
-class UsersService {
+export class UsersService {
     private log: FastifyBaseLogger
     private roles: TRoles[]
 
@@ -90,7 +90,7 @@ class UsersService {
     }
 
     async getById(id: string): Promise<(User & { _count: { referrals: number } }) | null> {
-        return prisma.user.findUnique({
+        return await prisma.user.findUnique({
             where: { id },
             include: {
                 _count: {
@@ -103,7 +103,7 @@ class UsersService {
     }
 
     async update(data: Partial<User>, id: string): Promise<User> {
-        return prisma.user.update({
+        return await prisma.user.update({
             where: {
                 id,
             },
@@ -167,5 +167,3 @@ class UsersService {
         return null
     }
 }
-
-export default UsersService

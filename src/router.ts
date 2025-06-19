@@ -1,16 +1,18 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
+import { IConfig } from "./config"
 import { IProcedure } from "./procedures"
 import { TJwtVerifyObject } from "./services/tokens/tokens.type"
 import { API_METHODS } from "./types/api-methods.type"
 import { TServices } from "./types/servises.type"
-import { API_GUARD, HELPFUL_TAGS } from "./types/tags.type"
+import { API_GUARD, HELPFUL_TAGS, MAIN_TAGS } from "./types/tags.type"
 
 interface Params {
     procedures: IProcedure[]
     services: TServices
+    config: IConfig
 }
 
-export default async (app: FastifyInstance, { services, procedures }: Params) => {
+export default async (app: FastifyInstance, { services, procedures, config }: Params) => {
     for (const { Procedure, path } of procedures) {
         const { title, method, paramsSchema, resultSchema, tags, ...rest } = Procedure
 
@@ -25,10 +27,19 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
             auth.push(services.passport.steam())
         }
 
+        if (tags.includes(MAIN_TAGS.CHECKOUT)) {
+            auth.push((app as any).checkClient)
+        }
+
+        if (tags.includes(HELPFUL_TAGS.PAYMENT_CALLBACK)) {
+            auth.push((app as any).verifyCallback)
+        }
+
         app.route({
             method,
             url: `/api/${path}${title ? `/${title}` : ""}`,
             ...(auth.length && { preValidation: app.auth(auth) }),
+
             schema: {
                 ...(method === API_METHODS.GET
                     ? {
@@ -53,25 +64,25 @@ export default async (app: FastifyInstance, { services, procedures }: Params) =>
                         ...(request.params as Record<string, unknown>),
                     }
 
-                    const { currency, ref } = request.cookies
+                    const { app_currency, ref } = request.cookies
 
                     const user: TJwtVerifyObject = request.user as TJwtVerifyObject
 
-                    params.user = user
-                    if (currency) params.currency = currency
+                    if (user) params.user = user
                     if (ref) params.ref = ref
+                    if (app_currency) params.app_currency = app_currency
 
                     const result = await procInstance.exec(params)
 
                     services.tokens.proccess(reply, tags, result, user)
 
                     if (tags.includes(HELPFUL_TAGS.PASSPORT_CALLBACK)) {
-                        await reply.redirect(
-                            `${process.env.FRONT_URL}/i/balance` ||
-                                "http://localhost:3000/i/balance"
-                        )
+                        await reply.redirect(`${config.app.frontUrl}/i/balance`)
                     }
 
+                    if (tags.includes(HELPFUL_TAGS.PAYMENT_CALLBACK)) {
+                        reply.status(200).send("OK")
+                    }
                     await reply.send(result)
                 } catch (error) {
                     app.log.error(error)

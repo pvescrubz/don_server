@@ -41,7 +41,9 @@ class ActivateEmailProcedure extends Procedure {
             throw new Error("Activation token or email is missing")
         }
 
-        await this.services.email.sendActivateEmail(activationToken, email, name)
+        this.services.email
+            .sendActivateEmail(activationToken, email, name)
+            .catch(err => console.error(err))
         return { success: true }
     }
 }

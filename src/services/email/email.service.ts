@@ -3,8 +3,10 @@ import nodemailer from "nodemailer"
 import { render } from "@react-email/components"
 import { IConfig } from "../../config"
 import { ActivateEmail } from "../../emails/ActivateEmail"
+import { CheckoutEmail } from "../../emails/CheckoutEmail"
+import { ICheckoutNotifWithEmail } from "../../types/checkout-notification.type"
 
-class EmailService {
+export class EmailService {
     private transporter: nodemailer.Transporter
     private company: string
     private emailUser: string
@@ -43,6 +45,26 @@ class EmailService {
             html,
         })
     }
-}
 
-export default EmailService
+    async sendCheckoutEmail(data: ICheckoutNotifWithEmail) {
+        const { email, amount, transactionId, operation, paymentMethod, skins } = data
+
+        const html = await render(
+            CheckoutEmail({
+                companyName: this.company,
+                amount,
+                transactionId,
+                paymentMethod,
+                operation,
+                skins,
+            })
+        )
+
+        await this.transporter.sendMail({
+            from: `"${this.company}" <${this.emailUser}>`,
+            to: email,
+            subject: "Уведомление об оплате ✔",
+            html,
+        })
+    }
+}

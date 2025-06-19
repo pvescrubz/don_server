@@ -5,6 +5,9 @@ export const MAIN_TAGS = {
     FILTERS: "Filters",
     CART: "Cart",
     CURRENCY: "Currency",
+    CALLBACK: "Callback",
+    CHECKOUT: "Checkout",
+    ORDERS: "Orders",
 } as const
 
 export const HELPFUL_TAGS = {
@@ -14,6 +17,7 @@ export const HELPFUL_TAGS = {
     ACCESS: "Access",
     PASSPORT_STEAM: "PassportSteam",
     PASSPORT_CALLBACK: "PassportCallback",
+    PAYMENT_CALLBACK: "PaymentCallback",
 } as const
 
 export const API_GUARD = {

@@ -23,17 +23,17 @@ class SkinsProcedure extends Procedure {
         properties: USER_SCHEME,
     }
 
-    async execute(params: { currency: string }, user: TJwtVerifyObject): Promise<User> {
+    async execute(params: { app_currency: string }, user: TJwtVerifyObject): Promise<User> {
         const { userId } = user
-        const { currency } = params
+        const { app_currency } = params
 
-        if (!currency) throw new Error("Ошибка при смене валюты")
+        if (!app_currency) throw new Error("Ошибка при смене валюты")
 
         const dbUser = await this.services.users.getById(userId)
         if (!dbUser) throw new Error("Пользователь не найден")
 
         const updatedUser = await this.services.users.update(
-            { selectedCurrency: currency as CurrencyKey },
+            { selectedCurrency: app_currency as CurrencyKey },
             userId
         )
 

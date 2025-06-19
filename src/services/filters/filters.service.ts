@@ -9,7 +9,7 @@ export class FiltersService {
                 name: "cs2",
             },
         })
-           const rarity = await prisma.rarity.findMany({
+        const rarity = await prisma.rarity.findMany({
             where: {
                 gameId: game?.id,
             },
@@ -171,5 +171,3 @@ export class FiltersService {
         }
     }
 }
-
-export default FiltersService

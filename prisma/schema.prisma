@@ -20,20 +20,62 @@ enum CurrencyKey {
   EUR
 }
 
+model Currency {
+  id     String  @id @default(cuid())
+  isMain Boolean @unique @default(true)
+
+  RUB Decimal @default(1) @db.Decimal(12, 2)
+  USD Decimal @default(80.5) @db.Decimal(12, 2)
+  EUR Decimal @default(92) @db.Decimal(12, 2)
+  KZT Decimal @default(7) @db.Decimal(12, 2)
+
+  @@map("currency")
+}
+
+enum PaymentMethod {
+  ACCUNT_BALANCE
+  SBP
+}
+
+enum PaymentStatus {
+  PENDING // Ожидает оплаты
+  PAID // Оплачено точно в сумму заявки
+  PARTIALLY_PAID // Оплачено меньше указанной суммы
+  OVERPAID // Оплачено больше указанной суммы
+  EXPIRED // Просрочена, но может быть оплачена позднее
+  CANCELED // Отменена (вами или оператором)
+  ERROR // Ошибка при создании заявки или процессе оплаты
+
+  @@map("Status")
+}
+
+enum Operation {
+  RECHARGE_ACCUNT_BALANCE
+
+  RECHARGE_STEAM_BALANCE
+  RECHARGE_PS_BALANCE
+  RECHARGE_BLIZZARD_BALANCE
+  RECHARGE_EPIC_BALANCE
+  RECHARGE_XBOX_BALANCE
+
+  BUY_SKINS
+}
+
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name  String?
+  name  String? 
   email String? @unique
 
   steamId       String  @unique
   steamTradeUrl String? @unique
-  steamAvatar   String?
+  steamAvatar   String? 
 
   activatedEmail  String?
-  activationToken String?
+  activationToken String? 
 
   balance Decimal @default(0) @db.Decimal(12, 2)
 
@@ -44,22 +86,12 @@ model User {
   referredById String?
   referrals    User[]  @relation("Referrals")
 
+  orders Order[]
+
   roles Role[] @default([USER])
-  Cart  Cart?
+  cart  Cart?
 
   @@map("users")
-}
-
-model Currency {
-  id     String  @id @default(cuid())
-  isMain Boolean @unique @default(true)
-  
-  RUB    Decimal @default(1) @db.Decimal(12, 2)
-  USD    Decimal @default(80.5) @db.Decimal(12, 2)
-  EUR    Decimal @default(92) @db.Decimal(12, 2)
-  KZT    Decimal @default(7) @db.Decimal(12, 2)
-
-  @@map("currency")
 }
 
 model Cart {
@@ -75,6 +107,28 @@ model Cart {
   skins Skin[] @relation("CartSkins")
 
   @@map("cart")
+}
+
+
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactionId String?        @unique
+  status        PaymentStatus?
+  operation     Operation
+  amount        Decimal        @default(0) @db.Decimal(12, 2)
+  paymentMethod PaymentMethod
+
+  notificationEmail String
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  skins Skin[] @relation("OrderSkins")
+
+  @@map("orders")
 }
 
 model Skin {
@@ -133,6 +187,7 @@ model Skin {
   weeklyProducts WeeklyProducts[] @relation("SkinToWeekly")
   lastBuy        LastBuy[]        @relation("SkinToLastBuy")
   carts          Cart[]           @relation("CartSkins")
+  orders         Order[]          @relation("OrderSkins")
 
   @@index([slug])
   @@index([gameId])

@@ -11,5 +11,5 @@
         "strict": true,
         "esModuleInterop": true
     },
-    "include": ["src/**/*", "src/procedures/auth/.procedure.ts"]
+    "include": ["src/**/*", "./index.d.ts"]
 }

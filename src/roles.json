@@ -16,7 +16,9 @@
             "cart:add",
             "cart:remove",
             "cart:clear",
-            "cart:change-currency"
+            "cart:change-currency",
+
+            "orders:undefined"
         ]
     }
 ]
