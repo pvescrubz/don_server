@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import fp from "fastify-plugin"
 import { IConfig } from "../config"
-import TokensService from "../services/tokens/tokens.service"
+import { TokensService } from "../services"
 
 const plugin = async (fastify: FastifyInstance, options: IConfig) => {
     const { auth } = options

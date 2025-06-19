@@ -3,7 +3,7 @@ import { FastifyBaseLogger } from "fastify"
 import { prisma } from "../../prismaClient"
 import { ICart } from "./cart.type"
 
-class CartService {
+export class CartService {
     private log: FastifyBaseLogger
 
     constructor(params: { log: FastifyBaseLogger }) {
@@ -62,7 +62,6 @@ class CartService {
                 total: {
                     increment: Number(skin.price),
                 },
-
             },
         })
     }
@@ -89,7 +88,6 @@ class CartService {
                 total: {
                     decrement: Number(skin.price),
                 },
-
             },
         })
     }
@@ -106,10 +104,22 @@ class CartService {
                 },
                 itemsCount: 0,
                 total: 0,
-
+            },
+        })
+    }
+    async clearByUserId(userId: string): Promise<ICart> {
+        return await prisma.cart.update({
+            where: { userId: userId },
+            include: {
+                skins: true,
+            },
+            data: {
+                skins: {
+                    set: [],
+                },
+                itemsCount: 0,
+                total: 0,
             },
         })
     }
 }
-
-export default CartService

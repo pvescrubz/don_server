@@ -171,5 +171,3 @@ export class SkinsService {
         return isNaN(num) ? null : num
     }
 }
-
-export default SkinsService

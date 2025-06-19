@@ -58,5 +58,3 @@ export class WeeklyProductService {
         return shuffled.slice(0, count)
     }
 }
-
-export default WeeklyProductService

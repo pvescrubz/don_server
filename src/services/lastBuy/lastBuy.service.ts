@@ -58,5 +58,3 @@ export class LastBuyService {
         return shuffled.slice(0, count)
     }
 }
-
-export default LastBuyService

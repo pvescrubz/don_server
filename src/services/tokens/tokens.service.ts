@@ -3,7 +3,7 @@ import * as jwt from "jsonwebtoken"
 import { API_GUARD, HELPFUL_TAGS, TTags } from "../../types/tags.type"
 import { TJwtVerifyObject } from "./tokens.type"
 
-class TokensService {
+export class TokensService {
     private readonly JWT_SECRET: string
     private readonly TOKEN_EXPIRATION_ACCESS: number
     private readonly TOKEN_EXPIRATION_REFRESH: number
@@ -85,4 +85,4 @@ class TokensService {
     }
 }
 
-export default TokensService
+
