@@ -7,6 +7,8 @@ export interface ICheckoutNotif {
     operation: Operation
     paymentMethod: PaymentMethod
     skins?: Skin[]
+    login?: string
+    region?: string
 }
 export interface ICheckoutNotifWithEmail extends Omit<ICheckoutNotif, "companyName"> {
     email: string

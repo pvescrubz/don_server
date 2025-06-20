@@ -19,6 +19,7 @@ import {
   OrdersService,
   PassportService,
   SkinsService,
+  StatisticsService,
   TokensService,
   UsersService,
   WeeklyProductService,
@@ -56,6 +57,7 @@ export default async (config: IConfig) => {
         orders: new OrdersService({ log: app.log }),
         checkout: new CheckoutService({ log: app.log, config }),
         notification: new NotificationService(config),
+        statistics: new StatisticsService(),
     }
 
     const procedures = getProcedures()
@@ -66,11 +68,11 @@ export default async (config: IConfig) => {
         config,
     })
 
-
     await Promise.all([
-        // services.currency.init(),
-        // services.weeklyProduct.init(),
-        // services.lastBuy.init(),
+        services.currency.init(),
+        services.weeklyProduct.init(),
+        services.lastBuy.init(),
+        services.statistics.init(),
     ])
 
     return app

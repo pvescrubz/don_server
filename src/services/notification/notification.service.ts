@@ -15,7 +15,7 @@ export class NotificationService {
 
     async sendNotificationToTelegram(data: ICheckoutNotifWithEmail) {
         const text = await this.renderTgMessage(data)
-        
+
         const response = await fetch(this.URI_API, {
             method: "POST",
             headers: {
@@ -35,7 +35,7 @@ export class NotificationService {
     }
 
     private async renderTgMessage(data: ICheckoutNotifWithEmail) {
-        const { paymentMethod, transactionId, amount, operation, email, skins } = data
+        const { paymentMethod, transactionId, amount, operation, email, login, skins, region } = data
 
         let message = `<b>🔔 Новый платёж</b>\n`
         message += `➖➖➖➖➖➖➖➖➖\n\n`
@@ -44,6 +44,9 @@ export class NotificationService {
         message += `<b>ID транзакции:</b> <code>${this.formatValue(transactionId)}</code>\n`
         message += `<b>Сумма:</b> ${this.formatValue(amount)} ₽\n`
         message += `<b>Операция:</b> ${this.formatValue(OPERATION_RU[operation])}\n`
+        if (login) message += `<b>Login пополнения:</b> ${login}\n`
+        if (region) message += `<b>Регион пополнения:</b> ${region}\n`
+
         message += `<b>Email:</b> ${this.formatValue(email)}\n`
 
         if (skins && skins.length > 0) {

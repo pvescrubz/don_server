@@ -61,21 +61,22 @@ enum Operation {
   BUY_SKINS
 }
 
-
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name  String? 
+  name  String?
   email String? @unique
 
   steamId       String  @unique
   steamTradeUrl String? @unique
-  steamAvatar   String? 
+  steamAvatar   String?
+
+  isSubscribedToNews Boolean @default(false)
 
   activatedEmail  String?
-  activationToken String? 
+  activationToken String?
 
   balance Decimal @default(0) @db.Decimal(12, 2)
 
@@ -109,6 +110,16 @@ model Cart {
   @@map("cart")
 }
 
+model Statistics {
+  id      String  @id @default(cuid())
+  isMain  Boolean @unique @default(true)
+  total   Int
+  monthly Int
+  weekly  Int
+  daily   Int
+
+  @@map("statistics")
+}
 
 model Order {
   id        String   @id @default(cuid())
@@ -120,6 +131,8 @@ model Order {
   operation     Operation
   amount        Decimal        @default(0) @db.Decimal(12, 2)
   paymentMethod PaymentMethod
+  login         String?
+  region        String?
 
   notificationEmail String
 

@@ -9,6 +9,7 @@ import {
   OrdersService,
   PassportService,
   SkinsService,
+  StatisticsService,
   TokensService,
   UsersService,
   WeeklyProductService,
@@ -28,4 +29,5 @@ export type TServices = {
     orders: OrdersService
     checkout: CheckoutService
     notification: NotificationService
+    statistics: StatisticsService
 }

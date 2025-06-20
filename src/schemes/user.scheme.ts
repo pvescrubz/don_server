@@ -7,6 +7,7 @@ export const USER_SCHEME = {
     steamTradeUrl: { type: "string" },
     activatedEmail: { type: "string" },
     selectedCurrency: { type: "string" },
+    isSubscribedToNews: { type: "boolean" },
     balance: { type: "string" },
     ref: { type: "string" },
     _count: {

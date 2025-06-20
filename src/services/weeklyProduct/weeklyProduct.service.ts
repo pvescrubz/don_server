@@ -5,7 +5,11 @@ export class WeeklyProductService {
     async init() {
         await this.updateWeeklyProduct()
         cron.schedule("0 3 * * 0", async () => {
-            await this.updateWeeklyProduct()
+            try {
+                await this.updateWeeklyProduct()
+            } catch (err) {
+                console.error("[cron] updateWeeklyProduct failed:", err)
+            }
         })
     }
 

@@ -15,6 +15,7 @@ export * from './orders/orders.type';
 export * from './passport/passport.service';
 export * from './skins/skins.service';
 export * from './skins/skins.type';
+export * from './statistics/statistics.service';
 export * from './tokens/tokens.service';
 export * from './tokens/tokens.type';
 export * from './users/users.service';

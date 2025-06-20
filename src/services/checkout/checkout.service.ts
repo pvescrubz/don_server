@@ -26,9 +26,10 @@ export class CheckoutService {
         updateOrder,
         clearCart,
     }: IAccountBalanceParams): Promise<ICheckoutRes> {
-        const { amount, paymentMethod, operation, email } = data
+        const { amount, paymentMethod, operation, email, login, region } = data
         const { balance, id } = user
 
+        if (!email) throw new Error("Email не указан")
         if (operation === Operation.RECHARGE_ACCUNT_BALANCE) {
             throw new Error("Некорректная платежная операция")
         }
@@ -44,6 +45,8 @@ export class CheckoutService {
                 operation,
                 notificationEmail: email,
                 userId: id,
+                ...(login && { login }),
+                ...(region && { region }),
             },
             isBuySkins
         )
@@ -97,12 +100,12 @@ export class CheckoutService {
         createOrder,
         updateOrder,
     }: ISBPParams): Promise<{ payment_url: string }> {
-        const { amount, paymentMethod, operation, email } = data
+        const { amount, paymentMethod, operation, email, login, region } = data
 
+        if (!email) throw new Error("Email не указан")
         if (!user && operation === Operation.BUY_SKINS) {
             throw new Error("Ошибка при оплате скинов")
         }
-
         const order = await createOrder(
             {
                 amount,
@@ -110,6 +113,8 @@ export class CheckoutService {
                 operation,
                 notificationEmail: email,
                 userId: user?.id,
+                ...(login && { login }),
+                ...(region && { region }),
             },
             isBuySkins
         )
