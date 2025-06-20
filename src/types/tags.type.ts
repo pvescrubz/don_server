@@ -8,6 +8,7 @@ export const MAIN_TAGS = {
     CALLBACK: "Callback",
     CHECKOUT: "Checkout",
     ORDERS: "Orders",
+    STATISTICS: "Statistics",
 } as const
 
 export const HELPFUL_TAGS = {

@@ -8,6 +8,8 @@ export interface ICheckoutParams {
     operation: Operation
     currency: CurrencyKey
     email?: string
+    login?: string
+    region?: string
 }
 
 export interface ICheckoutRes {
@@ -17,7 +19,7 @@ export interface ICheckoutRes {
 }
 
 export interface IAccountBalanceParams {
-    data: Required<ICheckoutParams>
+    data: ICheckoutParams
     user: User
     isBuySkins: boolean
     createOrder: (data: ICreateOrderData, withCart?: boolean) => Promise<Order>
@@ -30,7 +32,7 @@ export interface IAccountBalanceParams {
 }
 
 export interface IAccountBalanceParams {
-    data: Required<ICheckoutParams>
+    data: ICheckoutParams
     user: User
     isBuySkins: boolean
     createOrder: (data: ICreateOrderData, withCart?: boolean) => Promise<Order>
@@ -43,7 +45,7 @@ export interface IAccountBalanceParams {
 }
 
 export interface ISBPParams {
-    data: Required<ICheckoutParams>
+    data: ICheckoutParams
     user?: User | null
     isBuySkins: boolean
     createOrder: (data: ICreateOrderData, withCart?: boolean) => Promise<Order>

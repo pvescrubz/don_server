@@ -6,4 +6,5 @@ export interface ICreateOrderData {
     operation: Operation
     notificationEmail: string
     userId?: string
+    login?: string
 }

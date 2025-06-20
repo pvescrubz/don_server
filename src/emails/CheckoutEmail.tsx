@@ -3,9 +3,9 @@ import * as React from "react"
 import { OPERATION_RU, PAYMENT_METHOD_RU } from "../constants"
 import { ICheckoutNotif } from "../types/checkout-notification.type"
 
-
 export const CheckoutEmail = (data: ICheckoutNotif) => {
-    const { companyName, amount, transactionId, operation, paymentMethod, skins } = data
+    const { companyName, amount, transactionId, operation, paymentMethod, skins, login, region } =
+        data
 
     const previewText = `Оплата на сайте ${companyName}`
 
@@ -202,6 +202,32 @@ export const CheckoutEmail = (data: ICheckoutNotif) => {
                             >
                                 ✅ {OPERATION_RU[operation]}
                             </Text>
+                            {login && (
+                                <Text
+                                    style={{
+                                        fontSize: "15px",
+                                        color: "#059669",
+                                        margin: "0 0 16px",
+                                        fontWeight: "500",
+                                        lineHeight: "1.5",
+                                    }}
+                                >
+                                    👤 Login: {login}
+                                </Text>
+                            )}
+                            {region && (
+                                <Text
+                                    style={{
+                                        fontSize: "15px",
+                                        color: "#059669",
+                                        margin: "0 0 16px",
+                                        fontWeight: "500",
+                                        lineHeight: "1.5",
+                                    }}
+                                >
+                                    🌐 Регион: {region}
+                                </Text>
+                            )}
 
                             <div
                                 style={{

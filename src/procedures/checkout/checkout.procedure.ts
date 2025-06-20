@@ -22,6 +22,8 @@ class CheckoutProcedure extends Procedure {
             paymentMethod: { type: "string" },
             operation: { type: "string" },
             email: { type: "string" },
+            login: { type: "string" },
+            region: { type: "string" },
         },
     }
 
@@ -38,8 +40,7 @@ class CheckoutProcedure extends Procedure {
         params: ICheckoutParams,
         user?: TJwtVerifyObject
     ): Promise<{ success: boolean; payment_url?: string }> {
-        const { amount, paymentMethod, currency, operation, email } = params
-  
+        const { amount, paymentMethod, currency, operation, email, login, region } = params
 
         let dbUser = null
 
@@ -67,13 +68,15 @@ class CheckoutProcedure extends Procedure {
             validatedAmount = await this.services.currency.convert(validatedAmount, currency, "RUB")
         }
 
-        const validatedParams: Required<ICheckoutParams> = {
+        const validatedParams: ICheckoutParams = {
             amount: validatedAmount,
             paymentMethod,
             currency,
             operation,
             email: notificationEmail,
-        }     
+            login,
+            region
+        }
 
         if (paymentMethod === PaymentMethod.ACCUNT_BALANCE) {
             if (!dbUser) throw new Error("Ошибка при оплате через баланс аккаунта")
@@ -91,9 +94,11 @@ class CheckoutProcedure extends Procedure {
                 email: notificationEmail,
                 amount,
                 transactionId,
+                skins,
                 operation,
                 paymentMethod,
-                skins,
+                login,
+                region
             }
 
             this.services.email.sendCheckoutEmail(notifData).catch(err => {

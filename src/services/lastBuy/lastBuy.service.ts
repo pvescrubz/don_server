@@ -5,7 +5,11 @@ export class LastBuyService {
     async init() {
         await this.updateLastBuy()
         cron.schedule("0 3 * * 0", async () => {
-            await this.updateLastBuy()
+            try {
+                await this.updateLastBuy()
+            } catch (err) {
+                console.error("[cron] updateLastBuy failed:", err)
+            }
         })
     }
 

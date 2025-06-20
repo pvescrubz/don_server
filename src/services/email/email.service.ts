@@ -47,22 +47,16 @@ export class EmailService {
     }
 
     async sendCheckoutEmail(data: ICheckoutNotifWithEmail) {
-        const { email, amount, transactionId, operation, paymentMethod, skins } = data
-
         const html = await render(
             CheckoutEmail({
                 companyName: this.company,
-                amount,
-                transactionId,
-                paymentMethod,
-                operation,
-                skins,
+                ...data,
             })
         )
 
         await this.transporter.sendMail({
             from: `"${this.company}" <${this.emailUser}>`,
-            to: email,
+            to: data.email,
             subject: "Уведомление об оплате ✔",
             html,
         })
