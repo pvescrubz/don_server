@@ -13,3 +13,8 @@ export interface ICheckoutNotif {
 export interface ICheckoutNotifWithEmail extends Omit<ICheckoutNotif, "companyName"> {
     email: string
 }
+
+export interface IPriceGuaranteeNotif {
+    email: string
+    link: string
+}
