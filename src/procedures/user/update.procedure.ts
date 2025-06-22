@@ -6,7 +6,7 @@ import { API_GUARD, MAIN_TAGS, TTags } from "../../types/tags.type"
 import { emailValidator } from "../../utils/email-validator"
 import Procedure from "../procedure"
 
-class ActivateEmailProcedure extends Procedure {
+class UpdateUserProcedure extends Procedure {
     static title = "update"
     static method = API_METHODS.POST
     static tags: TTags = [API_GUARD.PRIVATE, MAIN_TAGS.USER]
@@ -22,6 +22,9 @@ class ActivateEmailProcedure extends Procedure {
             email: {
                 type: "string",
             },
+            isSubscribedToNews: {
+                type: "boolean",
+            },
         },
     }
 
@@ -32,10 +35,10 @@ class ActivateEmailProcedure extends Procedure {
     }
 
     async execute(
-        params: { steamTradeUrl: string; email: string },
+        params: { steamTradeUrl: string; email: string; isSubscribedToNews: boolean },
         user: TJwtVerifyObject
     ): Promise<User> {
-        const { steamTradeUrl, email } = params
+        const { email, ...updateData } = params
 
         if (email && !emailValidator(email)) throw new Error("Некорретные емейл")
 
@@ -44,14 +47,18 @@ class ActivateEmailProcedure extends Procedure {
 
         const updatedUser = await this.services.users.update(
             {
-                ...(steamTradeUrl && { steamTradeUrl }),
+                ...updateData,
                 ...(email && { email: email.toLowerCase() }),
             },
             user.userId
         )
 
+        if (updateData.isSubscribedToNews) {
+            this.services.email.sendSubscrEmail(email)
+        }
+
         return updatedUser
     }
 }
 
-export default ActivateEmailProcedure
+export default UpdateUserProcedure

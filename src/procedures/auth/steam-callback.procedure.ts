@@ -28,13 +28,13 @@ class LoginProcedure extends Procedure {
         properties: USER_SCHEME,
     }
 
-    async execute(params: { ref?: string }, user: any): Promise<User> {
+    async execute(_: unknown, user: any, context: { ref: string }): Promise<User> {
         const { personaname, avatarfull, steamid } = user._json
 
         const candidate = await this.services.users.getBySteamId(steamid)
 
         if (!candidate) {
-            const { ref } = params
+            const { ref } = context
 
             return await this.services.users.createWithSteam({
                 name: personaname,

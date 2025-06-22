@@ -64,13 +64,16 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
                         ...(request.params as Record<string, unknown>),
                     }
 
-                    const { app_currency, ref } = request.cookies
-
                     const user: TJwtVerifyObject = request.user as TJwtVerifyObject
-
                     if (user) params.user = user
-                    if (ref) params.ref = ref
-                    if (app_currency) params.app_currency = app_currency
+
+                    const { app_currency, ref } = request.cookies
+                    
+                    params.context = {
+                        ...(params.context || {}),
+                        ...(app_currency && { app_currency }),
+                        ...(ref && { ref }),
+                    }
 
                     const result = await procInstance.exec(params)
 

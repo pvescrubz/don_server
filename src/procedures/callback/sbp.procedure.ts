@@ -66,12 +66,14 @@ class SbpCallbackProcedure extends Procedure {
                 operation: order.operation,
                 paymentMethod: order.paymentMethod,
                 skins: order.skins,
-                ...(order.login && { login: order.login } ),
-                ...(order.region && { login: order.region } ),
+                ...(order.login && { login: order.login }),
+                ...(order.region && { login: order.region }),
             }
+            
             this.services.email.sendCheckoutEmail(notifData).catch(err => console.error(err))
+            const tgMessage = this.services.notification.renderCheckoutMessage(notifData)
             this.services.notification
-                .sendNotificationToTelegram(notifData)
+                .sendNotifToTelegram(tgMessage)
                 .catch(err => console.error(err))
         }
 

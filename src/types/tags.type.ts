@@ -9,6 +9,7 @@ export const MAIN_TAGS = {
     CHECKOUT: "Checkout",
     ORDERS: "Orders",
     STATISTICS: "Statistics",
+    PRICE_GUARANTEE: "PriceGuarantee",
 } as const
 
 export const HELPFUL_TAGS = {

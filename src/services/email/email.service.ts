@@ -4,6 +4,7 @@ import { render } from "@react-email/components"
 import { IConfig } from "../../config"
 import { ActivateEmail } from "../../emails/ActivateEmail"
 import { CheckoutEmail } from "../../emails/CheckoutEmail"
+import { SubscrEmail } from "../../emails/SubcrEmail"
 import { ICheckoutNotifWithEmail } from "../../types/checkout-notification.type"
 
 export class EmailService {
@@ -42,6 +43,20 @@ export class EmailService {
             from: `"${this.company}" <${this.emailUser}>`,
             to: email,
             subject: "Активация вашего аккаунта ✔",
+            html,
+        })
+    }
+    async sendSubscrEmail(email: string) {
+        const html = await render(
+            SubscrEmail({
+                companyName: this.company,
+            })
+        )
+
+        await this.transporter.sendMail({
+            from: `"${this.company}" <${this.emailUser}>`,
+            to: email,
+            subject: `Вы подписались на новости от ${this.company}`,
             html,
         })
     }

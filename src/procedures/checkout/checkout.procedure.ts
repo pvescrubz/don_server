@@ -75,7 +75,7 @@ class CheckoutProcedure extends Procedure {
             operation,
             email: notificationEmail,
             login,
-            region
+            region,
         }
 
         if (paymentMethod === PaymentMethod.ACCUNT_BALANCE) {
@@ -98,14 +98,17 @@ class CheckoutProcedure extends Procedure {
                 operation,
                 paymentMethod,
                 login,
-                region
+                region,
             }
 
             this.services.email.sendCheckoutEmail(notifData).catch(err => {
                 console.error(err)
             })
 
-            this.services.notification.sendNotificationToTelegram(notifData)
+            const tgMessage = this.services.notification.renderCheckoutMessage(notifData)
+            this.services.notification
+                .sendNotifToTelegram(tgMessage)
+                .catch(err => console.error(err))
 
             return { success: true }
         }

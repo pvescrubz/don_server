@@ -23,9 +23,9 @@ class SkinsProcedure extends Procedure {
         properties: USER_SCHEME,
     }
 
-    async execute(params: { app_currency: string }, user: TJwtVerifyObject): Promise<User> {
+    async execute(_:unknown, user: TJwtVerifyObject, context: { app_currency: string }): Promise<User> {
         const { userId } = user
-        const { app_currency } = params
+        const { app_currency } = context
 
         if (!app_currency) throw new Error("Ошибка при смене валюты")
 

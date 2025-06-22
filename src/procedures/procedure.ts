@@ -25,18 +25,18 @@ class Procedure {
         this.log = params.log
     }
 
-    async execute(params: any, user?: any): Promise<any> {
+    async execute(params: any, user?: any, context?: any): Promise<any> {
         return null
     }
 
     async exec(params: any): Promise<any> {
         this.log.trace({ params }, "pd.exec")
-        const { user, ...data } = params
+        const { user, context, ...data } = params
 
         const cls = this.constructor as typeof Procedure
 
         if (cls.tags.includes(API_GUARD.PUBLIC)) {
-            return this.execute(data, user)
+            return this.execute(data, user, context)
         }
 
         const [name, tag] = [cls.title, cls.tags[1].toLowerCase()]
@@ -53,7 +53,7 @@ class Procedure {
             throw error
         }
 
-        return this.execute(data, user)
+        return this.execute(data, user, context)
     }
 }
 
