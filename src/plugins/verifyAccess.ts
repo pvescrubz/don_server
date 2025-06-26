@@ -4,9 +4,8 @@ import { IConfig } from "../config"
 import { TokensService } from "../services"
 
 const plugin = async (fastify: FastifyInstance, options: IConfig) => {
-    const { auth } = options
 
-    const tokensService = new TokensService(auth.secret)
+    const tokensService = new TokensService(options)
 
     fastify.decorate("verifyAccess", async function (request: FastifyRequest, reply: FastifyReply) {
         try {
