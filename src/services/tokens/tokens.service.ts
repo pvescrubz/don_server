@@ -1,5 +1,7 @@
 import { FastifyReply } from "fastify"
 import * as jwt from "jsonwebtoken"
+import { IConfig } from "../../config"
+import { IS_PRODUCTION } from "../../constants"
 import { API_GUARD, HELPFUL_TAGS, TTags } from "../../types/tags.type"
 import { TJwtVerifyObject } from "./tokens.type"
 
@@ -8,8 +10,8 @@ export class TokensService {
     private readonly TOKEN_EXPIRATION_ACCESS: number
     private readonly TOKEN_EXPIRATION_REFRESH: number
 
-    constructor(secret: string) {
-        this.JWT_SECRET = secret
+    constructor(config: IConfig) {
+        this.JWT_SECRET = config.auth.secret
         this.TOKEN_EXPIRATION_ACCESS = parseInt("43200", 10)
         this.TOKEN_EXPIRATION_REFRESH = parseInt("604800", 10)
     }
@@ -56,6 +58,7 @@ export class TokensService {
             secure: true,
             httpOnly: true,
             sameSite: true,
+            ...(IS_PRODUCTION && { domain: process.env.COOKIE_DOMAIN }),
         })
     }
 
@@ -63,11 +66,11 @@ export class TokensService {
         const refreshToken = this.sign(payload, { expiresIn: this.TOKEN_EXPIRATION_REFRESH })
 
         reply.setCookie("refreshToken", refreshToken, {
-            // path: "/",
             path: "/api/auth/check-refresh",
             secure: true,
             httpOnly: true,
             sameSite: true,
+            ...(IS_PRODUCTION && { domain: process.env.COOKIE_DOMAIN }),
         })
     }
 
@@ -79,10 +82,7 @@ export class TokensService {
     clearAuthTokens(reply: FastifyReply): void {
         reply.clearCookie("accessToken", { path: "/" })
         reply.clearCookie("refreshToken", {
-            // path: "/",
             path: "/api/auth/check-refresh",
         })
     }
 }
-
-

@@ -45,7 +45,7 @@ export default async (config: IConfig) => {
 
     const services: TServices = {
         users: new UsersService({ log: app.log }),
-        tokens: new TokensService(config.auth.secret),
+        tokens: new TokensService(config),
         email: new EmailService(config),
         passport: new PassportService(),
         skins: new SkinsService(),
@@ -68,6 +68,7 @@ export default async (config: IConfig) => {
         config,
     })
 
+   
     await Promise.all([
         services.currency.init(),
         services.weeklyProduct.init(),

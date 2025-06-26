@@ -51,12 +51,12 @@ const plugin = async (fastify: FastifyInstance, options: IConfig) => {
 
                 const body = request.body as Record<string, string>
 
-                // const actualSign = signWebhook(body, xTime, secret)
+                const actualSign = signWebhook(body, xTime, secret)
 
-                // if (actualSign !== xSign) {
-                //     request.log.warn(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
-                //     return reply.status(403).send({ error: "Invalid signature" })
-                // }
+                if (actualSign !== xSign) {
+                    request.log.warn(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
+                    return reply.status(403).send({ error: "Invalid signature" })
+                }
 
                 return
             } catch (err: unknown) {

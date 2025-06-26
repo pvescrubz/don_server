@@ -16,3 +16,5 @@ export const OPERATION_RU = {
 
     [Operation.BUY_SKINS]: "Покупка скинов",
 }
+
+export const IS_PRODUCTION = process.env.NODE_ENV === "production"
