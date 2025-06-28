@@ -25,9 +25,9 @@ model Currency {
   isMain Boolean @unique @default(true)
 
   RUB Decimal @default(1) @db.Decimal(12, 2)
-  USD Decimal @default(80.5) @db.Decimal(12, 2)
-  EUR Decimal @default(92) @db.Decimal(12, 2)
-  KZT Decimal @default(7) @db.Decimal(12, 2)
+  USD Decimal @default(78.2) @db.Decimal(12, 2)
+  EUR Decimal @default(92.15) @db.Decimal(12, 2)
+  KZT Decimal @default(0.15) @db.Decimal(12, 2)
 
   @@map("currency")
 }
