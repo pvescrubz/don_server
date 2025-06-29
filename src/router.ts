@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { IConfig } from "./config"
+
 import { IProcedure } from "./procedures"
 import { TJwtVerifyObject } from "./services/tokens/tokens.type"
 import { API_METHODS } from "./types/api-methods.type"
@@ -31,8 +32,8 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
             auth.push((app as any).checkClient)
         }
 
-        if (tags.includes(HELPFUL_TAGS.PAYMENT_CALLBACK)) {
-            auth.push((app as any).verifyCallback)
+        if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
+            auth.push((app as any).verifyWebhook)
         }
 
         app.route({
@@ -68,7 +69,7 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
                     if (user) params.user = user
 
                     const { app_currency, ref } = request.cookies
-                    
+
                     params.context = {
                         ...(params.context || {}),
                         ...(app_currency && { app_currency }),
@@ -83,9 +84,10 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
                         await reply.redirect(`${config.app.frontUrl}/i/balance`)
                     }
 
-                    if (tags.includes(HELPFUL_TAGS.PAYMENT_CALLBACK)) {
+                    if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
                         reply.status(200).send("OK")
                     }
+
                     await reply.send(result)
                 } catch (error) {
                     app.log.error(error)

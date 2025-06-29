@@ -138,6 +138,7 @@ export class CheckoutService {
     private async getInvoice(order_id: string, amount: string): Promise<IInvoiceSbpRes> {
         const success_url = `${this.config.app.frontUrl}/checkout/success`
         const fail_url = `${this.config.app.frontUrl}/checkout/error`
+        const notification_url = `${this.config.app.backUrl}/api/webhook/sbp`
 
         const invoice = await fetch(`https://${this.siteKey}/api/v2/invoices`, {
             method: "POST",
@@ -150,6 +151,7 @@ export class CheckoutService {
                 amount,
                 success_url,
                 fail_url,
+                notification_url,
             }),
         })
 
