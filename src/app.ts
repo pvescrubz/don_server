@@ -1,6 +1,5 @@
 import fastifyAuth from "@fastify/auth"
 import fastifyCookie from "@fastify/cookie"
-import fastifyFormbody from "@fastify/formbody"
 import fastify from "fastify"
 import type { IConfig } from "./config"
 import { ajvPlugin, corsPlugin, swaggerPlugin, verifyToken, verifyWebhook } from "./plugins"
@@ -32,7 +31,27 @@ export default async (config: IConfig) => {
         trustProxy: true,
     })
 
-    app.register(fastifyFormbody)
+    // app.register(fastifyFormbody)
+    // app.register(fastifyRawBody, {
+    //     field: "rawBody",
+    //     global: false,
+    //     encoding: "utf8",
+    //     runFirst: true,
+    // })
+
+    app.addContentTypeParser(
+        "application/x-www-form-urlencoded",
+        { parseAs: "string" },
+        function (req, body, done) {
+            const parsed = new URLSearchParams(body.toString())
+            const result: Record<string, string> = {}
+            for (const [key, value] of parsed) {
+                result[key] = value
+            }
+            done(null, result)
+        }
+    )
+
     app.register(ajvPlugin)
     app.register(corsPlugin, config)
     app.register(swaggerPlugin)
@@ -68,7 +87,6 @@ export default async (config: IConfig) => {
         config,
     })
 
-   
     await Promise.all([
         services.currency.init(),
         services.weeklyProduct.init(),
