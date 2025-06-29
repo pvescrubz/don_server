@@ -69,10 +69,10 @@ export default async (config: IConfig) => {
     })
 
     await Promise.all([
-        // services.currency.init(),
-        // services.weeklyProduct.init(),
-        // services.lastBuy.init(),
-        // services.statistics.init(),
+        services.currency.init(),
+        services.weeklyProduct.init(),
+        services.lastBuy.init(),
+        services.statistics.init(),
     ])
 
     return app
