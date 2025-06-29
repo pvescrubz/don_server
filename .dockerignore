@@ -3,3 +3,5 @@ dist
 db
 .git
 *.log
+send-webhook.bat
+deploy.sh
