@@ -138,7 +138,7 @@ export class CheckoutService {
     private async getInvoice(order_id: string, amount: string): Promise<IInvoiceSbpRes> {
         const success_url = `${this.config.app.frontUrl}/checkout/success`
         const fail_url = `${this.config.app.frontUrl}/checkout/error`
-        const notification_url = `${this.config.app.frontUrl}/callback/sbp`
+        const notification_url = `${this.config.app.backUrl}/callback/sbp`
 
         const invoice = await fetch(`https://${this.siteKey}/api/v2/invoices`, {
             method: "POST",
