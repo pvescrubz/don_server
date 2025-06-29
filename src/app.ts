@@ -33,27 +33,6 @@ export default async (config: IConfig) => {
     })
 
     app.register(fastifyFormbody)
-    
-    // app.register(fastifyRawBody, {
-    //     field: "rawBody",
-    //     global: false,
-    //     encoding: "utf8",
-    //     runFirst: true,
-    // })
-
-    // app.addContentTypeParser(
-    //     "application/x-www-form-urlencoded",
-    //     { parseAs: "string" },
-    //     function (req, body, done) {
-    //         const parsed = new URLSearchParams(body.toString())
-    //         const result: Record<string, string> = {}
-    //         for (const [key, value] of parsed) {
-    //             result[key] = value
-    //         }
-    //         done(null, result)
-    //     }
-    // )
-
     app.register(ajvPlugin)
     app.register(corsPlugin, config)
     app.register(swaggerPlugin)

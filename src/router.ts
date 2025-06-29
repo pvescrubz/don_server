@@ -40,9 +40,6 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
             url: `/api/${path}${title ? `/${title}` : ""}`,
             ...(auth.length && { preValidation: app.auth(auth) }),
 
-            // ...(tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK) && {
-            //     config: { rawBody: true },
-            // }),
             schema: {
                 ...(method === API_METHODS.GET
                     ? {
@@ -60,25 +57,11 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
 
             handler: async function (request: FastifyRequest, reply: FastifyReply) {
                 try {
-                    let params: Record<string, unknown> = {}
-
-                    if (method === API_METHODS.GET) {
-                        params = { ...(request.query as Record<string, unknown>) }
-                    } else {
-                        params = { ...(request.body as Record<string, unknown>) }
-                    }
-
-                    params = {
-                        ...params,
+                    const params = {
+                        ...(method === API_METHODS.GET
+                            ? (request.query as Record<string, unknown>)
+                            : (request.body as Record<string, unknown>)),
                         ...(request.params as Record<string, unknown>),
-                    }
-
-                    if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK) && "rawBody" in request) {
-                        const rawBodyString = request.rawBody as string
-                        const parsed = new URLSearchParams(rawBodyString)
-                        for (const [key, value] of parsed) {
-                            params[key] = value
-                        }
                     }
 
                     const user: TJwtVerifyObject = request.user as TJwtVerifyObject
@@ -103,7 +86,7 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
                     if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
                         reply.status(200).send("OK")
                     }
-
+                    
                     await reply.send(result)
                 } catch (error) {
                     app.log.error(error)
