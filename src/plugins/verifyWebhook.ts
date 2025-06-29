@@ -30,11 +30,9 @@ function signWebhook(params: Record<string, string>, xTime: string, siteKey: str
 }
 
 const plugin = async (fastify: FastifyInstance, options: IConfig) => {
-
     fastify.decorate(
         "verifyWebhook",
         async function (request: FastifyRequest, reply: FastifyReply) {
-          console.log(request)
             try {
                 const ip = request.ip.replace("::ffff:", "")
                 if (!ALLOWED_IPS.includes(ip)) {
@@ -51,13 +49,17 @@ const plugin = async (fastify: FastifyInstance, options: IConfig) => {
                 }
 
                 const body = request.body as Record<string, string>
+                console.log(body)
 
                 const actualSign = signWebhook(body, xTime, secret)
 
                 if (actualSign !== xSign) {
                     request.log.warn(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
+                    console.error(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
+                    
                     return reply.status(403).send({ error: "Invalid signature" })
                 }
+                console.log('всё ок')
 
                 return
             } catch (err: unknown) {
