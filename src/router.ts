@@ -31,15 +31,18 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
             auth.push((app as any).checkClient)
         }
 
-        if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
-            auth.push((app as any).verifyWebhook)
-        }
+        // if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
+        //     auth.push((app as any).verifyWebhook)
+        // }
 
         app.route({
             method,
             url: `/api/${path}${title ? `/${title}` : ""}`,
             ...(auth.length && { preValidation: app.auth(auth) }),
 
+            ...(tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK) && {
+                config: { rawBody: true },
+            }),
             schema: {
                 ...(method === API_METHODS.GET
                     ? {
@@ -57,11 +60,25 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
 
             handler: async function (request: FastifyRequest, reply: FastifyReply) {
                 try {
-                    const params = {
-                        ...(method === API_METHODS.GET
-                            ? (request.query as Record<string, unknown>)
-                            : (request.body as Record<string, unknown>)),
+                    let params: Record<string, unknown> = {}
+
+                    if (method === API_METHODS.GET) {
+                        params = { ...(request.query as Record<string, unknown>) }
+                    } else {
+                        params = { ...(request.body as Record<string, unknown>) }
+                    }
+
+                    params = {
+                        ...params,
                         ...(request.params as Record<string, unknown>),
+                    }
+
+                    if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK) && "rawBody" in request) {
+                        const rawBodyString = request.rawBody as string
+                        const parsed = new URLSearchParams(rawBodyString)
+                        for (const [key, value] of parsed) {
+                            params[key] = value
+                        }
                     }
 
                     const user: TJwtVerifyObject = request.user as TJwtVerifyObject
