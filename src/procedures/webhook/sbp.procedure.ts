@@ -25,7 +25,7 @@ class SbpCallbackProcedure extends Procedure {
     }
 
     async execute(params: IPaymentCallback): Promise<null> {
-      console.log(params)
+
         const { id: transactionId, order_id, status, amount } = params
 
         const order = await this.services.orders.getById(order_id)
@@ -70,7 +70,7 @@ class SbpCallbackProcedure extends Procedure {
                 ...(order.login && { login: order.login }),
                 ...(order.region && { login: order.region }),
             }
-            
+
             this.services.email.sendCheckoutEmail(notifData).catch(err => console.error(err))
             const tgMessage = this.services.notification.renderCheckoutMessage(notifData)
             this.services.notification
