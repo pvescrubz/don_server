@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { IConfig } from "./config"
-
 import { IProcedure } from "./procedures"
 import { TJwtVerifyObject } from "./services/tokens/tokens.type"
 import { API_METHODS } from "./types/api-methods.type"
