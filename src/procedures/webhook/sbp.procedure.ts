@@ -25,7 +25,6 @@ class SbpCallbackProcedure extends Procedure {
     }
 
     async execute(params: IPaymentCallback): Promise<null> {
-
         const { id: transactionId, order_id, status, amount } = params
 
         const order = await this.services.orders.getById(order_id)
