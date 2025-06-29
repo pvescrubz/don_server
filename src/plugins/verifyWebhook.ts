@@ -18,19 +18,17 @@ function signWebhook(params: Record<string, string>, xTime: string, siteKey: str
 
         if (typeof value === "boolean") {
             s += value ? "true" : "false"
-            continue
+        } else {
+            s += String(value)
         }
-
-        s += String(value)
     }
 
     s += xTime
 
-    const lowercased = s.toLowerCase()
+    const finalString = s.toLowerCase()
 
-    return crypto.createHmac("sha512", siteKey).update(lowercased).digest("hex")
+    return crypto.createHmac("sha512", siteKey).update(finalString).digest("hex")
 }
-
 
 const plugin = async (fastify: FastifyInstance, options: IConfig) => {
     fastify.decorate(
@@ -51,18 +49,30 @@ const plugin = async (fastify: FastifyInstance, options: IConfig) => {
                     return reply.status(400).send({ error: "Missing X-Time or X-Sign" })
                 }
 
-                const body = request.body as Record<string, string>
-                console.log(body)
+                const body = request.body as Record<string, any>
+                console.log('Raw body:', body)
 
-                const actualSign = signWebhook(body, xTime, secret)
+                // Привести всё к строкам (как в PHP $_POST)
+                const normalizedBody: Record<string, string> = {}
+
+                for (const key of Object.keys(body)) {
+                    const value = body[key]
+                    if (value === undefined || value === null) {
+                        normalizedBody[key] = ''
+                    } else if (typeof value === 'boolean') {
+                        normalizedBody[key] = value ? 'true' : 'false'
+                    } else {
+                        normalizedBody[key] = String(value)
+                    }
+                }
+
+                const actualSign = signWebhook(normalizedBody, xTime, secret)
 
                 if (actualSign !== xSign) {
                     request.log.warn(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
                     console.error(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
-
                     return reply.status(403).send({ error: "Invalid signature" })
                 }
-
 
                 return
             } catch (err: unknown) {
