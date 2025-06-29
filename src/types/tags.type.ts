@@ -5,7 +5,7 @@ export const MAIN_TAGS = {
     FILTERS: "Filters",
     CART: "Cart",
     CURRENCY: "Currency",
-    CALLBACK: "Callback",
+    WEBHOOK: "Webhook",
     CHECKOUT: "Checkout",
     ORDERS: "Orders",
     STATISTICS: "Statistics",
@@ -19,7 +19,7 @@ export const HELPFUL_TAGS = {
     ACCESS: "Access",
     PASSPORT_STEAM: "PassportSteam",
     PASSPORT_CALLBACK: "PassportCallback",
-    PAYMENT_CALLBACK: "PaymentCallback",
+    PAYMENT_WEBHOOK: "PaymentWebhook",
 } as const
 
 export const API_GUARD = {

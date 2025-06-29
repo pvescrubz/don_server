@@ -32,8 +32,9 @@ function signWebhook(params: Record<string, string>, xTime: string, siteKey: str
 const plugin = async (fastify: FastifyInstance, options: IConfig) => {
 
     fastify.decorate(
-        "verifyCallback",
+        "verifyWebhook",
         async function (request: FastifyRequest, reply: FastifyReply) {
+          console.log(request)
             try {
                 const ip = request.ip.replace("::ffff:", "")
                 if (!ALLOWED_IPS.includes(ip)) {
@@ -69,6 +70,6 @@ const plugin = async (fastify: FastifyInstance, options: IConfig) => {
     )
 }
 
-export const verifyCallback = fp(plugin, {
-    name: "verifyCallback-plugin",
+export const verifyWebhook = fp(plugin, {
+    name: "verifyWebhook-plugin",
 })

@@ -9,7 +9,7 @@ import Procedure from "../procedure"
 class SbpCallbackProcedure extends Procedure {
     static title = "sbp"
     static method = API_METHODS.POST
-    static tags: TTags = [API_GUARD.PUBLIC, MAIN_TAGS.CALLBACK, HELPFUL_TAGS.PAYMENT_CALLBACK]
+    static tags: TTags = [API_GUARD.PUBLIC, MAIN_TAGS.WEBHOOK, HELPFUL_TAGS.PAYMENT_WEBHOOK]
     static summary = "Колбэк для оплаты"
 
     static paramsSchema = {

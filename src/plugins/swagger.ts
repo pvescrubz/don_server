@@ -41,7 +41,7 @@ const swaggerOptions = {
                 description: "Получить курсы валют",
             },
             {
-                name: MAIN_TAGS.CALLBACK,
+                name: MAIN_TAGS.WEBHOOK,
                 description: "Колбэки",
             },
         ],

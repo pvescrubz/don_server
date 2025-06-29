@@ -3,7 +3,7 @@ import fastifyCookie from "@fastify/cookie"
 import fastifyFormbody from "@fastify/formbody"
 import fastify from "fastify"
 import type { IConfig } from "./config"
-import { ajvPlugin, corsPlugin, swaggerPlugin, verifyCallback, verifyToken } from "./plugins"
+import { ajvPlugin, corsPlugin, swaggerPlugin, verifyToken, verifyWebhook } from "./plugins"
 import { checkClient } from "./plugins/checkClient"
 import { passportPlugin } from "./plugins/passport"
 import getProcedures from "./procedures"
@@ -37,7 +37,7 @@ export default async (config: IConfig) => {
     app.register(corsPlugin, config)
     app.register(swaggerPlugin)
     app.register(checkClient, config)
-    app.register(verifyCallback, config)
+    app.register(verifyWebhook, config)
     app.register(fastifyAuth)
     app.register(verifyToken, config)
     app.register(fastifyCookie)
