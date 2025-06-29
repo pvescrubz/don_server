@@ -26,8 +26,11 @@ function signWebhook(params: Record<string, string>, xTime: string, siteKey: str
 
     s += xTime
 
-    return crypto.createHmac("sha512", siteKey).update(s.toLowerCase()).digest("hex")
+    const lowercased = s.toLowerCase()
+
+    return crypto.createHmac("sha512", siteKey).update(lowercased).digest("hex")
 }
+
 
 const plugin = async (fastify: FastifyInstance, options: IConfig) => {
     fastify.decorate(
@@ -56,10 +59,10 @@ const plugin = async (fastify: FastifyInstance, options: IConfig) => {
                 if (actualSign !== xSign) {
                     request.log.warn(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
                     console.error(`❌ Неверная подпись: ${xSign} ≠ ${actualSign}`)
-                    
+
                     return reply.status(403).send({ error: "Invalid signature" })
                 }
-                console.log('всё ок')
+
 
                 return
             } catch (err: unknown) {
