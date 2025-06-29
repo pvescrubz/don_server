@@ -31,18 +31,18 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
             auth.push((app as any).checkClient)
         }
 
-        // if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
-        //     auth.push((app as any).verifyWebhook)
-        // }
+        if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
+            auth.push((app as any).verifyWebhook)
+        }
 
         app.route({
             method,
             url: `/api/${path}${title ? `/${title}` : ""}`,
             ...(auth.length && { preValidation: app.auth(auth) }),
 
-            ...(tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK) && {
-                config: { rawBody: true },
-            }),
+            // ...(tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK) && {
+            //     config: { rawBody: true },
+            // }),
             schema: {
                 ...(method === API_METHODS.GET
                     ? {
