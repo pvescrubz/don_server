@@ -27,7 +27,7 @@ const plugin = async (fastify: FastifyInstance, options: IConfig) => {
         "steam",
         new SteamStrategy(
             {
-                returnURL: `${app.backUrl}/api/auth/steam-callback`,
+                returnURL: `${app.backUrl}/auth/steam-callback`,
                 realm: `${app.backUrl}`,
                 apiKey: auth.steamKey,
             },

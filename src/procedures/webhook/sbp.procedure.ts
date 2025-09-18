@@ -67,7 +67,7 @@ class SbpCallbackProcedure extends Procedure {
                 paymentMethod: order.paymentMethod,
                 skins: order.skins,
                 ...(order.login && { login: order.login }),
-                ...(order.region && { login: order.region }),
+                ...(order.region && { region: order.region }),
             }
 
             this.services.email.sendCheckoutEmail(notifData).catch(err => console.error(err))
