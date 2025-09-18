@@ -84,7 +84,7 @@ export default async (app: FastifyInstance, { services, procedures, config }: Pa
                     }
 
                     if (tags.includes(HELPFUL_TAGS.PAYMENT_WEBHOOK)) {
-                        reply.status(200).send("OK")
+                      await reply.status(200).send("OK")
                     }
                     
                     await reply.send(result)
